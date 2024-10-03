@@ -1,4 +1,4 @@
-package com.example.ransomsensei;
+package com.example.ransomsensei
 
 import android.content.Context
 import androidx.room.Room
@@ -9,12 +9,13 @@ import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.Difficulty
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.hasItems
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import org.junit.runner.RunWith;
+import org.junit.runner.RunWith
 import java.io.IOException
 import kotlin.jvm.Throws
 
@@ -40,25 +41,21 @@ class CardTest {
     @Test
     @Throws(Exception::class)
     fun writeCardAndRead() {
-        val card1 = Card(1, "いれます","入れます","to put in", Difficulty.Easy);
-        val card2 = Card(2, "たべます","食べます","to eat", Difficulty.Medium);
+        val card1 = Card(1, "いれます","入れます","to put in", Difficulty.EASY)
+        val card2 = Card(2, "たべます","食べます","to eat", Difficulty.MEDIUM)
 
-
-        cardDao.insertCards(card1, card2);
+        cardDao.insertCards(card1, card2)
         val cards = cardDao.getAll()
-        assertThat(cards.get(0), equalTo(card1))
-        assertThat(cards.get(0), equalTo(card2))
+        assertThat(cards, hasItems(card1, card2))
     }
 
     @Test
     @Throws(Exception::class)
     fun writeCardAndGetEasy() {
-        val card1 = Card(1, "いれます","入れます","to put in", Difficulty.Easy);
-        val card2 = Card(2, "たべます","食べます","to eat", Difficulty.Medium);
-        val card3 = Card(3, "べんきょう","勉強","study", Difficulty.Hard);
-        val card4 = Card(4, "べんきょうしています","勉強しています","to study", Difficulty.Easy);
-
-
+        val card1 = Card(1, "いれます","入れます","to put in", Difficulty.EASY)
+        val card2 = Card(2, "たべます","食べます","to eat", Difficulty.MEDIUM)
+        val card3 = Card(3, "べんきょう","勉強","study", Difficulty.HARD)
+        val card4 = Card(4, "べんきょうしています","勉強しています","to study", Difficulty.EASY)
 
         cardDao.insertCards(card1, card2, card3, card4)
         val cards = cardDao.loadAllEasy()
@@ -68,15 +65,12 @@ class CardTest {
     @Test
     @Throws(Exception::class)
     fun writeCardAndGetMedium() {
-        val card1 = Card(1, "いれます","入れます","to put in", Difficulty.Easy);
-        val card2 = Card(2, "たべます","食べます","to eat", Difficulty.Medium);
+        val card1 = Card(1, "いれます","入れます","to put in", Difficulty.EASY)
+        val card2 = Card(2, "たべます","食べます","to eat", Difficulty.MEDIUM)
 
 
-        cardDao.insertCards(card1, card2);
+        cardDao.insertCards(card1, card2)
         val cards = cardDao.loadAllMedium()
         assertThat(cards.get(0), equalTo(card2))
     }
-
-
-
 }

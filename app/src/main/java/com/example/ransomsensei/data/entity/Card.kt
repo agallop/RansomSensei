@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-enum class Difficulty {Easy, Medium, Hard}
+enum class Difficulty {EASY, MEDIUM, HARD}
 
 @Entity(tableName = "Cards")
 data class Card (

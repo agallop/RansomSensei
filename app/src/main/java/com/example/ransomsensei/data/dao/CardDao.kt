@@ -1,6 +1,5 @@
 package com.example.ransomsensei.data.dao
 
-import androidx.core.view.WindowInsetsCompat.Type.InsetsType
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,13 +13,13 @@ interface CardDao {
     fun getAll(): List<Card>
 
     @Query("SELECT * FROM Cards WHERE difficulty = 'EASY'")
-    fun loadAllHard(): List<Card>
-
-    @Query("SELECT * FROM Cards WHERE difficulty = 'MEDIUM'")
     fun loadAllEasy(): List<Card>
 
-    @Query("SELECT * FROM Cards WHERE difficulty = 'HARD'")
+    @Query("SELECT * FROM Cards WHERE difficulty = 'MEDIUM'")
     fun loadAllMedium(): List<Card>
+
+    @Query("SELECT * FROM Cards WHERE difficulty = 'HARD'")
+    fun loadAllHard(): List<Card>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCards(vararg cards: Card)
