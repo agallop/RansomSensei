@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
-
 }
 
 android {
@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 }
 
@@ -55,29 +56,53 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    val room_version = "2.6.1"
-
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
 
     // To use Kotlin Symbol Processing (KSP)
-    ksp("androidx.room:room-compiler:$room_version")
+    ksp(libs.androidx.room.compiler)
 
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.androidx.room.ktx)
 
     // optional - RxJava2 support for Room
-    implementation("androidx.room:room-rxjava2:$room_version")
+    implementation(libs.androidx.room.rxjava2)
 
     // optional - RxJava3 support for Room
-    implementation("androidx.room:room-rxjava3:$room_version")
+    implementation(libs.androidx.room.rxjava3)
 
     // optional - Guava support for Room, including Optional and ListenableFuture
-    implementation("androidx.room:room-guava:$room_version")
+    implementation(libs.androidx.room.guava)
 
     // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
+    testImplementation(libs.androidx.room.testing)
 
     // optional - Paging 3 Integration
-    implementation("androidx.room:room-paging:$room_version")
+    implementation(libs.androidx.room.paging)
+
+    val composeBom = platform("androidx.compose:compose-bom:2024.09.02")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // Choose one of the following:
+    // Material Design 3
+    implementation(libs.androidx.material3)
+    // or Material Design 2
+    implementation(libs.androidx.material)
+    // or skip Material Design and build directly on top of foundational components
+    implementation(libs.androidx.foundation)
+    // or only import the main APIs for the underlying toolkit systems,
+    // such as input and measurement/layout
+    implementation(libs.androidx.ui)
+
+    // Android Studio Preview support
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+
+    // UI Tests
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Optional - Integration with activities
+    implementation(libs.androidx.activity.compose)
 }
