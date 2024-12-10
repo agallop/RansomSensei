@@ -4,16 +4,16 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-24T21:41:19.749367800Z">
+        <DropdownSelection timestamp="2024-12-10T02:36:36.952142Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=1B241FDEE002ZX" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\crisc\.android\avd\Medium_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="CardTest">
+      <SelectionState runConfigName="AddTerm">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
