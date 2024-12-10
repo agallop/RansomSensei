@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.accompanist.drawablepainter)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -58,6 +58,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.datastore.preferences)
 
     // To use Kotlin Symbol Processing (KSP)
     ksp(libs.androidx.room.compiler)
