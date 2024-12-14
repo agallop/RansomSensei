@@ -24,7 +24,7 @@ class RansomSenseiDataStoreManager(val context: Context){
         }
     }
 
-     fun getHomeActivity() :Flow<String> {
+    fun getHomeActivity() :Flow<String> {
         return context.preferenceDataStore.data.map {
             preferences ->
             preferences[HOME_ACTIVITY] ?: ""

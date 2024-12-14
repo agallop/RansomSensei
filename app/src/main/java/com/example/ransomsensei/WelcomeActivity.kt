@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
@@ -50,7 +52,6 @@ class WelcomeActivity : ComponentActivity(){
         }
 
         setContent {
-
             val dataStoreContext = LocalContext.current
             val dataStoreManager = RansomSenseiDataStoreManager(context = dataStoreContext)
 
@@ -63,10 +64,8 @@ class WelcomeActivity : ComponentActivity(){
     @Composable
     fun IndeterminateCircularIndicator(modifier: Modifier = Modifier,
                                        packageInfos: List<ResolveInfo>,
-                                        dataStore: RansomSenseiDataStoreManager,
-    context: Context) {
-
-
+                                       dataStore: RansomSenseiDataStoreManager,
+                                       context: Context) {
         val scope = rememberCoroutineScope()
         var selected = remember { mutableStateOf("") }
 
@@ -77,26 +76,30 @@ class WelcomeActivity : ComponentActivity(){
             Row (horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(12.dp)) {
-                Text("Welcome to Ransom Sensei. Please select your default launcher")
+                Text(text = "Welcome to Ransom Sensei. Please select your default launcher.",
+                    modifier = Modifier.width(240.dp))
             }
-
-
 
             for (packageInfo in packageInfos) {
                 val label = packageInfo.loadLabel(packageManager).toString()
-                if(label.isNotEmpty()) {
+                if(label.isNotEmpty() &&
+                    !packageInfo.activityInfo.packageName.contains("ransomsensei")) {
                     Row (horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(12.dp)) {
-                        Image(
-                            modifier = Modifier.padding((5.dp)),
-                            painter = DrawablePainter(packageInfo.loadIcon(packageManager)),
-                            contentDescription = null
-                        )
-                        Text(label)
-                        Checkbox(checked = packageInfo.activityInfo.packageName == selected.value, enabled = true, onCheckedChange = {
+                        Button(
+                            enabled = true,
+                            modifier = Modifier.widthIn(min = 240.dp),
+                            onClick = {
                             selected.value = packageInfo.activityInfo.packageName
-                        })
+                        }) {
+                            Image(
+                                modifier = Modifier.padding((5.dp)),
+                                painter = DrawablePainter(packageInfo.loadIcon(packageManager)),
+                                contentDescription = null
+                            )
+                            Text(label)
+                        }
                     }
                 }
             }
@@ -105,13 +108,27 @@ class WelcomeActivity : ComponentActivity(){
                 enabled = selected.value.isNotEmpty(),
                 onClick = {
                     if (selected.value.isEmpty()) {
-                        Toast.makeText(context, "Please select a home activity", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please select a home activity",
+                            Toast.LENGTH_SHORT).show()
                     } else {
-                        scope.launch { dataStore.saveHomeActivity(selected.value) }
+                        scope.launch {
+                            dataStore.saveHomeActivity(selected.value)
+                            finish()
+                        }
                     }
                 }
 
             ) { Text("Select Launcher") }
+
+            Button(
+                enabled = true,
+                onClick = {
+                    finish()
+                }
+
+            ) { Text("Skip for now")}
         }
     }
 }
