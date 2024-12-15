@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 const val SETTINGS_DATABASE = "settings"
@@ -24,11 +24,10 @@ class RansomSenseiDataStoreManager(val context: Context){
         }
     }
 
-    fun getHomeActivity() :Flow<String> {
+    suspend fun getHomeActivity() : String {
         return context.preferenceDataStore.data.map {
             preferences ->
             preferences[HOME_ACTIVITY] ?: ""
-        }
-
+        }.first()
     }
 }
