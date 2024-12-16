@@ -11,23 +11,23 @@ import com.example.ransomsensei.data.entity.Card
 @Dao
 interface CardDao {
     @Query("SELECT * FROM Cards")
-    fun getAll(): List<Card>
+    suspend fun getAll(): List<Card>
 
     @Query("SELECT * FROM Cards WHERE difficulty = 'EASY'")
-    fun loadAllEasy(): List<Card>
+    suspend fun loadAllEasy(): List<Card>
 
     @Query("SELECT * FROM Cards WHERE difficulty = 'MEDIUM'")
-    fun loadAllMedium(): List<Card>
+    suspend fun loadAllMedium(): List<Card>
 
     @Query("SELECT * FROM Cards WHERE difficulty = 'HARD'")
-    fun loadAllHard(): List<Card>
+    suspend fun loadAllHard(): List<Card>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCards(vararg cards: Card)
+    suspend fun insertCards(vararg cards: Card)
 
     @Update()
-    fun updateCard(card: Card)
+    suspend fun updateCard(card: Card)
 
     @Delete()
-    fun deleteCard(card: Card)
+    suspend fun deleteCard(card: Card)
 }

@@ -66,8 +66,7 @@ class MainActivity : ComponentActivity() {
                     context = context,
                     RansomSenseiDatabase::class.java,
                     "ransomSensei"
-                )
-                    .allowMainThreadQueries().build()
+                ).build()
                 var cards = remember { mutableStateListOf<Card>() }
                 var isLoading = remember { mutableStateOf(true) }
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
