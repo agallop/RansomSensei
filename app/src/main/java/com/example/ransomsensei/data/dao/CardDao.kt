@@ -1,6 +1,7 @@
 package com.example.ransomsensei.data.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -26,4 +27,7 @@ interface CardDao {
 
     @Update()
     fun updateCard(card: Card)
+
+    @Delete()
+    fun deleteCard(card: Card)
 }

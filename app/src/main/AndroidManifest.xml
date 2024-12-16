@@ -30,6 +30,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".WelcomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RansomSensei.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".ui.SetDefaultAppActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RansomSensei.NoActionBar" >
+        </activity>
+        <activity
             android:exported="true"
             android:name=".LockScreenActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
