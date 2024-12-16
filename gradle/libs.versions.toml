@@ -17,9 +17,11 @@ navigationFragmentKtx = "2.8.5"
 navigationUiKtx = "2.8.5"
 junitKtx = "1.2.1"
 roomRuntime = "2.6.1"
+googleFonts = "1.7.6"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "googleFonts"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-foundation = { module = "androidx.compose.foundation:foundation" }

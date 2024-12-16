@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.ransomsensei"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -106,4 +106,6 @@ dependencies {
 
     // Optional - Integration with activities
     implementation(libs.androidx.activity.compose)
+
+    implementation(libs.androidx.google.fonts)
 }

@@ -30,4 +30,10 @@ class RansomSenseiDataStoreManager(val context: Context){
             preferences[HOME_ACTIVITY] ?: ""
         }.first()
     }
+
+    suspend fun clearData() {
+        context.preferenceDataStore.edit {
+            it.clear()
+        }
+    }
 }
