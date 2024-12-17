@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
@@ -31,6 +34,7 @@ import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.Difficulty
+import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.SetDefaultAppActivity
 import com.google.accompanist.drawablepainter.DrawablePainter
 
@@ -69,76 +73,105 @@ class WelcomeActivity : ComponentActivity(){
                                  packageInfos: List<ResolveInfo>,
                                  dataStore: RansomSenseiDataStoreManager,
                                  context: Context) {
-        val scope = rememberCoroutineScope()
-        var selected = remember { mutableStateOf("") }
-        val setDefaultAppActivityIntent = Intent(this, SetDefaultAppActivity::class.java)
-        setDefaultAppActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        var database : RansomSenseiDatabase = Room.databaseBuilder(context = context,
-            RansomSenseiDatabase::class.java,
-            "ransomSensei" ).allowMainThreadQueries().build()
+
+        AppTheme {
+            val scope = rememberCoroutineScope()
+            var selected = remember { mutableStateOf("") }
+            val setDefaultAppActivityIntent = Intent(this, SetDefaultAppActivity::class.java)
+            setDefaultAppActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            var database: RansomSenseiDatabase = Room.databaseBuilder(
+                context = context,
+                RansomSenseiDatabase::class.java,
+                "ransomSensei"
+            ).allowMainThreadQueries().build()
 
 
-        Column ( modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
+            Scaffold { padding ->
+                Column(
+                    modifier = modifier.padding(padding),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-            Row (horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(12.dp)) {
-                Text(text = "Welcome to Ransom Sensei. Please select your default launcher.",
-                    modifier = Modifier.width(240.dp))
-            }
-
-            for (packageInfo in packageInfos) {
-                val label = packageInfo.loadLabel(packageManager).toString()
-                if(label.isNotEmpty() &&
-                    !packageInfo.activityInfo.packageName.contains("ransomsensei")) {
-                    Row (horizontalArrangement = Arrangement.Start,
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(12.dp)) {
-                        Button(
-                            enabled = true,
-                            modifier = Modifier.widthIn(min = 240.dp),
-                            onClick = {
-                            selected.value = packageInfo.activityInfo.packageName
-                        }) {
-                            Image(
-                                modifier = Modifier.padding((5.dp)),
-                                painter = DrawablePainter(packageInfo.loadIcon(packageManager)),
-                                contentDescription = null
-                            )
-                            Text(label)
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Text(
+                            text = "Welcome to Ransom Sensei. Please select your default launcher.",
+                            modifier = Modifier.width(240.dp)
+                        )
+                    }
+
+                    for (packageInfo in packageInfos) {
+                        val label = packageInfo.loadLabel(packageManager).toString()
+                        if (label.isNotEmpty() &&
+                            !packageInfo.activityInfo.packageName.contains("ransomsensei")
+                        ) {
+                                androidx.compose.material3.Card(shape = MaterialTheme.shapes.medium){
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth(fraction = 0.9f).padding(12.dp)
+                                    ) {
+                                    RadioButton(
+                                        onClick = {
+                                            selected.value = packageInfo.activityInfo.packageName
+                                        },
+                                        selected = selected.value == packageInfo.activityInfo.packageName
+                                    )
+                                    Image(
+                                        modifier = Modifier.padding((5.dp)),
+                                        painter = DrawablePainter(
+                                            packageInfo.loadIcon(
+                                                packageManager
+                                            )
+                                        ),
+                                        contentDescription = null
+                                    )
+                                    Text(label)
+                                }
+                            }
                         }
                     }
+
+                    Button(
+                        enabled = selected.value.isNotEmpty(),
+                        onClick = {
+                            scope.launch {
+                                dataStore.saveHomeActivity(selected.value)
+                                database.cardDao().insertCards(
+                                    Card(1, "いれます", "入れます", "to put in", Difficulty.EASY),
+                                    Card(2, "だいじょうぶ", "大丈夫", "gucci", Difficulty.EASY),
+                                    Card(
+                                        3,
+                                        "なんじですか",
+                                        "何時ですか",
+                                        "What time is it?",
+                                        Difficulty.MEDIUM
+                                    ),
+                                    Card(4, "つき", "月", "moon", Difficulty.EASY),
+                                    Card(5, "ちゅうい", "注意", "caution", Difficulty.HARD)
+                                )
+                                database.close()
+                                startActivity(setDefaultAppActivityIntent)
+                                finish()
+                            }
+                        }
+
+                    ) { Text("Select Launcher") }
+
+                    Button(
+                        enabled = true,
+                        onClick = {
+                            startActivity(setDefaultAppActivityIntent)
+                            finish()
+                        }
+                    ) { Text("Skip for now") }
                 }
             }
-
-            Button(
-                enabled = selected.value.isNotEmpty(),
-                onClick = {
-                    scope.launch {
-                        dataStore.saveHomeActivity(selected.value)
-                        database.cardDao().insertCards(
-                            Card(1, "いれます","入れます","to put in", Difficulty.EASY),
-                            Card(2, "だいじょうぶ","大丈夫","gucci", Difficulty.EASY),
-                            Card(3, "なんじですか","何時ですか","What time is it?", Difficulty.MEDIUM),
-                            Card(4, "つき","月","moon", Difficulty.EASY),
-                            Card(5, "ちゅうい","注意","caution", Difficulty.HARD))
-                        database.close()
-                        startActivity(setDefaultAppActivityIntent)
-                        finish()
-                    }
-                }
-
-            ) { Text("Select Launcher") }
-
-            Button(
-                enabled = true,
-                onClick = {
-                    startActivity(setDefaultAppActivityIntent)
-                    finish()
-                }
-            ) { Text("Skip for now")}
         }
     }
 }

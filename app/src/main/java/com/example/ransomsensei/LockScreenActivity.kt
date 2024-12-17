@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +32,7 @@ class LockScreenActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
+                Scaffold {  padding ->
                 val context = LocalContext.current
                 val dataStoreManager = RansomSenseiDataStoreManager(context = context)
                 var response = remember { mutableStateOf("") }
@@ -38,8 +41,7 @@ class LockScreenActivity : ComponentActivity() {
                     context = context,
                     RansomSenseiDatabase::class.java,
                     "ransomSensei"
-                )
-                    .allowMainThreadQueries().build()
+                ).build()
 
                 var kanaValue = remember { mutableStateOf("") }
                 var kanjiValue = remember { mutableStateOf("") }
@@ -56,7 +58,7 @@ class LockScreenActivity : ComponentActivity() {
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().padding(padding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -87,6 +89,7 @@ class LockScreenActivity : ComponentActivity() {
                         }
                     }) { Text("Check my answer") }
                 }
+            }
             }
         }
     }
