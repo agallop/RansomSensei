@@ -28,7 +28,6 @@ class SetDefaultAppActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 Scaffold { padding ->
-
                     Column (modifier = Modifier.fillMaxSize().padding(padding),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center) {
@@ -44,10 +43,9 @@ class SetDefaultAppActivity : ComponentActivity() {
                         Button(onClick = { finish() }) {
                             Text("Skip for now")
                         }
-
+                    }
                 }
             }
         }
     }
-}
 }
