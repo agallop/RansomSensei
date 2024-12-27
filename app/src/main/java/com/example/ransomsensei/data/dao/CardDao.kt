@@ -30,4 +30,7 @@ interface CardDao {
 
     @Delete()
     suspend fun deleteCard(card: Card)
+
+    @Delete
+    suspend fun deleteCards(cards: Collection<Card>)
 }

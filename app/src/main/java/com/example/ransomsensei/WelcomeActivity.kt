@@ -29,11 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.room.Room
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
-import com.example.ransomsensei.data.RansomSenseiDatabase
-import com.example.ransomsensei.data.entity.Card
-import com.example.ransomsensei.data.entity.Difficulty
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.SetDefaultAppActivity
 import com.google.accompanist.drawablepainter.DrawablePainter
@@ -64,26 +60,20 @@ class WelcomeActivity : ComponentActivity(){
 
             ChooseHomeActivityScreen(
                 modifier = Modifier.fillMaxSize(),
-                packageInfos = resolveInfos, dataStoreManager, context)
+                packageInfos = resolveInfos, dataStoreManager)
         }
     }
 
     @Composable
     fun ChooseHomeActivityScreen(modifier: Modifier = Modifier,
                                  packageInfos: List<ResolveInfo>,
-                                 dataStore: RansomSenseiDataStoreManager,
-                                 context: Context) {
+                                 dataStore: RansomSenseiDataStoreManager) {
 
         AppTheme {
             val scope = rememberCoroutineScope()
             var selected = remember { mutableStateOf("") }
             val setDefaultAppActivityIntent = Intent(this, SetDefaultAppActivity::class.java)
             setDefaultAppActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            var database: RansomSenseiDatabase = Room.databaseBuilder(
-                context = context,
-                RansomSenseiDatabase::class.java,
-                "ransomSensei"
-            ).allowMainThreadQueries().build()
 
 
             Scaffold { padding ->
@@ -142,20 +132,6 @@ class WelcomeActivity : ComponentActivity(){
                         onClick = {
                             scope.launch {
                                 dataStore.saveHomeActivity(selected.value)
-                                database.cardDao().insertCards(
-                                    Card(1, "いれます", "入れます", "to put in", Difficulty.EASY),
-                                    Card(2, "だいじょうぶ", "大丈夫", "gucci", Difficulty.EASY),
-                                    Card(
-                                        3,
-                                        "なんじですか",
-                                        "何時ですか",
-                                        "What time is it?",
-                                        Difficulty.MEDIUM
-                                    ),
-                                    Card(4, "つき", "月", "moon", Difficulty.EASY),
-                                    Card(5, "ちゅうい", "注意", "caution", Difficulty.HARD)
-                                )
-                                database.close()
                                 startActivity(setDefaultAppActivityIntent)
                                 finish()
                             }

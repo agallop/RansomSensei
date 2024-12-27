@@ -20,7 +20,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.room.Room
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
@@ -52,21 +51,15 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
         setContent {
             AppTheme {
                 val WelcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
+                val AddTermActicityIntent = Intent(this, AddTermActivity::class.java)
                 val context = LocalContext.current
                 val dataStoreManager = RansomSenseiDataStoreManager(context = context)
                 var needToSetHomeActivity = remember { mutableStateOf(false) }
                 var scope = rememberCoroutineScope()
-                var database: RansomSenseiDatabase = Room.databaseBuilder(
-                    context = context,
-                    RansomSenseiDatabase::class.java,
-                    "ransomSensei"
-                ).build()
+                var database = RansomSenseiDatabase.getInstance(context)
                 var cards = remember { mutableStateListOf<Card>() }
                 var isLoading = remember { mutableStateOf(true) }
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -83,19 +76,13 @@ class MainActivity : ComponentActivity() {
                     isLoading.value = false
                 }
 
-
-
                 Scaffold (
                     floatingActionButton = {
                         ExtendedFloatingActionButton(
                             text = { Text("Add") },
                             icon = { Icon(Icons.Filled.Add, contentDescription = "") },
                             onClick = {
-                                scope.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
-                                    }
-                                }
+                                startActivity(AddTermActicityIntent)
                             }
                         )
                     },
@@ -130,10 +117,18 @@ class MainActivity : ComponentActivity() {
                             Button(onClick = {
                                 scope.launch {
                                     dataStoreManager.clearData()
-                                    database.clearAllTables()
+                                    database.cardDao().deleteCards(cards)
                                     needToSetHomeActivity.value = true
                                 }
                             }) { Text("Clear all data") }
+                        }
+                        item {
+                            Button(onClick = {
+                                scope.launch {
+                                    cards.clear()
+                                    cards.addAll(database.cardDao().getAll())
+                                }
+                            }) { Text("Refresh data") }
                         }
                     }
 
