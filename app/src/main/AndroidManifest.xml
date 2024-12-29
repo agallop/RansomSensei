@@ -49,7 +49,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".AddTermActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RansomSensei.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".EditTermActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RansomSensei.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

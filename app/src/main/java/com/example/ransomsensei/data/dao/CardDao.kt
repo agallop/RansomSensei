@@ -25,9 +25,15 @@ interface CardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCards(vararg cards: Card)
 
+    @Query("Select * FROM Cards WHERE uid = :uid")
+    suspend fun getCard(uid: Int): Card
+
     @Update()
     suspend fun updateCard(card: Card)
 
     @Delete()
     suspend fun deleteCard(card: Card)
+
+    @Delete
+    suspend fun deleteCards(cards: Collection<Card>)
 }
