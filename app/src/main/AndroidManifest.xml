@@ -54,6 +54,11 @@
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >
         </activity>
+        <activity
+            android:name=".EditTermActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RansomSensei.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

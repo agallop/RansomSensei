@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -20,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
@@ -36,7 +38,7 @@ class AddTermActivity : ComponentActivity() {
         setContent{
             AppTheme {
                 Scaffold { padding ->
-                        var kanjiValue = remember { mutableStateOf("") }
+                    val kanjiValue = remember { mutableStateOf("") }
                     val kanaValue = remember { mutableStateOf("") }
                     val englishValue = remember { mutableStateOf("") }
                     val difficulty = remember { mutableStateOf(Difficulty.UNKNOWN) }
@@ -49,18 +51,27 @@ class AddTermActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.Top
                     ) {
                         TextField(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                hintLocales = LocaleList("ja")
+                            ),
                                 modifier = Modifier.padding(10.dp),
                                 label = { Text(text = "Kanji value") },
                                 value = kanjiValue.value,
                                 onValueChange = { kanjiValue.value = it })
 
                         TextField(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                hintLocales = LocaleList("ja")
+                            ),
                                 modifier = Modifier.padding(10.dp),
                                 label = { Text(text = "Kana value") },
                                 value = kanaValue.value,
                                 onValueChange = { kanaValue.value = it })
 
                         TextField(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                hintLocales = LocaleList("en")
+                            ),
                                 modifier = Modifier.padding(10.dp),
                                 label = { Text(text = "English value") },
                                 value = englishValue.value,
@@ -97,6 +108,7 @@ class AddTermActivity : ComponentActivity() {
                                                     englishValue = englishValue.value,
                                                     difficulty = difficulty.value
                                             ))
+                                                setResult(RESULT_OK)
                                             finish()
                                     }
                                     })
