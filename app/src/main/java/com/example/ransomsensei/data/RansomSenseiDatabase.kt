@@ -6,13 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 import com.example.ransomsensei.data.dao.CardDao
+import com.example.ransomsensei.data.dao.CardSetDao
 import com.example.ransomsensei.data.entity.Card
+import com.example.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [Card::class], version = 2)
+@Database(entities = [CardSet::class, Card::class], version = 3)
 abstract class RansomSenseiDatabase : RoomDatabase() {
     abstract fun cardDao(): CardDao
+
+    abstract fun cardSetDao(): CardSetDao
 
     companion object {
         private const val Database_NAME = "ransomSensei"

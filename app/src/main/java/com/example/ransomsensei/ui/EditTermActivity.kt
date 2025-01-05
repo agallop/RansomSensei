@@ -109,7 +109,7 @@ class EditTermActivity : ComponentActivity() {
                                         RansomSenseiDatabase.getInstance(context).cardDao()
                                             .insertCards(
                                                 Card(
-                                                    uid = cardId,
+                                                    cardId = cardId,
                                                     kanaValue = kanaValue.value,
                                                     kanjiValue = kanjiValue.value,
                                                     englishValue = englishValue.value,

@@ -1,6 +1,5 @@
-package com.example.ransomsensei
+package com.example.ransomsensei.ui.cardset
 
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,19 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.example.ransomsensei.data.RansomSenseiDataStoreManager
-import com.example.ransomsensei.data.RansomSenseiDatabase
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -40,123 +26,143 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import com.example.ransomsensei.data.entity.CardSet
+import com.example.ransomsensei.AddTermActivity
+import com.example.ransomsensei.EditTermActivity
+import com.example.ransomsensei.WelcomeActivity
+import com.example.ransomsensei.data.RansomSenseiDataStoreManager
+import com.example.ransomsensei.data.RansomSenseiDatabase
+import com.example.ransomsensei.data.entity.Card
+import com.example.ransomsensei.data.entity.Difficulty
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.ui.cardset.CardSetActivity
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class CardSetActivity : ComponentActivity() {
 
+    companion object {
+        val CARD_SET_ID_EXTRA = "CARD_SET_ID"
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val cardSetId = intent.getIntExtra(CARD_SET_ID_EXTRA, 0)
 
-        setContent {
-            AppTheme {
-                val WelcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
+    setContent {
+        AppTheme {
+            val WelcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
 
-                val context = LocalContext.current
-                val dataStoreManager = RansomSenseiDataStoreManager(context = context)
-                val needToSetHomeActivity = remember { mutableStateOf(false) }
-                val scope = rememberCoroutineScope()
-                val database = RansomSenseiDatabase.getInstance(context)
-                val cardSets = remember { mutableStateOf<List<CardSet>>(listOf()) }
-                val isLoading = remember { mutableStateOf(true) }
-                val selectedCardSets = remember { mutableStateMapOf<CardSet, Boolean>() }
+            val context = LocalContext.current
+            val dataStoreManager = RansomSenseiDataStoreManager(context = context)
+            val needToSetHomeActivity = remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
+            val database = RansomSenseiDatabase.getInstance(context)
+            val cards = remember { mutableStateOf<List<Card>>(listOf()) }
+            val isLoading = remember { mutableStateOf(true) }
+            val selectedCards = remember { mutableStateMapOf<Card, Boolean>() }
 
-                LaunchedEffect(key1 = Unit) {
-                    needToSetHomeActivity.value = dataStoreManager.getHomeActivity().isEmpty()
-                    cardSets.value = database.cardSetDao().getAll()
-                    isLoading.value = false
+            LaunchedEffect(key1 = Unit) {
+                needToSetHomeActivity.value = dataStoreManager.getHomeActivity().isEmpty()
+                cards.value = database.cardDao().getCardsInSet(cardSetId = cardSetId)
+                isLoading.value = false
+            }
+
+            Scaffold(
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        title = {
+                            Text("Ransom Sensei")
+                        },
+                        actions =
+                        {
+                            if (selectedCards.isEmpty()) NoSelectedItemsNavigationBarActions {
+                                scope.launch {
+                                    cards.value = database.cardDao().getAll()
+                                }
+                                selectedCards.clear()
+                            }
+                            else SelectedItemsNavigationBarActions(
+                                selectedCards.keys,
+                                scope,
+                                database
+                            ) {
+                                scope.launch {
+                                    cards.value = database.cardDao().getAll()
+                                }
+                                selectedCards.clear()
+                            }
+                        }
+
+                    )
+                }) { padding ->
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    items(cards.value) {
+                        CardItem(
+                            card = it,
+                            selected = selectedCards.contains(it),
+                            onSelectionChange = { selected ->
+                                if (selected) selectedCards.put(
+                                    it,
+                                    true
+                                ) else selectedCards.remove(it)
+
+                            }
+                        )
+                    }
                 }
 
-                Scaffold(
-                    topBar = {
-                        CenterAlignedTopAppBar(
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.primary,
-                            ),
-                            title = {
-                                Text("Ransom Sensei")
-                            },
-                            actions =
-                            {
-                                if (selectedCardSets.isEmpty()) NoSelectedItemsNavigationBarActions {
-                                    scope.launch {
-                                        cardSets.value = database.cardSetDao().getAll()
-                                    }
-                                    selectedCardSets.clear()
-                                }
-                                else SelectedItemsNavigationBarActions(
-                                    selectedCardSets.keys,
-                                    scope,
-                                    database
-                                ) {
-                                    scope.launch {
-                                        cardSets.value = database.cardSetDao().getAll()
-                                    }
-                                    selectedCardSets.clear()
-                                }
-                            }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-                        )
-                    }) { padding ->
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                        items(cardSets.value) {
-                            CardSetCard(
-                                cardSet = it,
-                                selected = selectedCardSets.contains(it),
-                                onSelectionChange = { selected ->
-                                    if (selected) selectedCardSets.put(
-                                        it,
-                                        true
-                                    ) else selectedCardSets.remove(it)
-
-                                }
-                            )
-                        }
-                    }
-
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        if (needToSetHomeActivity.value) {
-                            needToSetHomeActivity.value = false
-                            startActivity(WelcomeActivityIntent)
-                        }
+                    if (needToSetHomeActivity.value) {
+                        needToSetHomeActivity.value = false
+                        startActivity(WelcomeActivityIntent)
                     }
                 }
             }
         }
-    }
+    }}
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun CardSetCard(
-        cardSet: CardSet,
+    fun CardItem(
+        card: Card,
         selected: Boolean = false,
         onSelectionChange: (Boolean) -> Unit
     ) {
+
         val haptics = LocalHapticFeedback.current
 
         Card(
@@ -166,16 +172,12 @@ class MainActivity : ComponentActivity() {
                 .padding(4.dp)
                 .combinedClickable(
                     onClick = {
-                        val cardSetIntent = Intent(this, CardSetActivity::class.java)
-                        cardSetIntent.putExtra(CardSetActivity.CARD_SET_ID_EXTRA, cardSet.cardSetId)
-                        startActivity(cardSetIntent)
                     },
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                         onSelectionChange(!selected)
                     })
         ) {
-
             ListItem(
                 colors = if (!selected)
                     ListItemDefaults.colors()
@@ -183,20 +185,32 @@ class MainActivity : ComponentActivity() {
                     ListItemDefaults.colors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     ),
+                overlineContent = {
+                    Text(
+                        text = card.kanaValue ?: "",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
+                },
                 headlineContent = {
                     Text(
-                        text = cardSet.cardSetName ?: "",
+                        text = card.kanjiValue ?: "",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                trailingContent = { Text((cardSet.cardSetStatus).name) })
-        }
+                supportingContent = {
+                    Text(
+                        text = card.englishValue ?: "",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                trailingContent = { Text((card.difficulty ?: Difficulty.EASY).name) })
         }
     }
 
     @Composable
     fun NoSelectedItemsNavigationBarActions(onEdit: () -> Unit) {
-        val addCardSetActivity = Intent(this, AddTermActivity::class.java)
+        val addTermActivityIntent = Intent(this, AddTermActivity::class.java)
         val activity = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -212,7 +226,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun SelectedItemsNavigationBarActions(
-        cardSets: Set<CardSet>,
+        cards: Set<Card>,
         scope: CoroutineScope,
         database: RansomSenseiDatabase,
         onEdit: () -> Unit
@@ -233,7 +247,7 @@ class MainActivity : ComponentActivity() {
             showDeleteConfirmation.value = true
         }) { Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete button") }
         IconButton(
-            enabled = cardSets.size == 1,
+            enabled = cards.size == 1,
             onClick = {
                 editTermActivityIntent.putExtra(EditTermActivity.CARD_ID_EXTRA, cards.single().cardId)
                 activity.launch(editTermActivityIntent)
@@ -243,10 +257,10 @@ class MainActivity : ComponentActivity() {
         when {
             showDeleteConfirmation.value ->
                 DeleteCardsAlertDialog(
-                    cardCount = cardSets.size,
+                    cardCount = cards.size,
                     onConfirmation = {
                         scope.launch {
-                            database.cardSetDao().deleteCardSets(cardSets)
+                            database.cardDao().deleteCards(cards)
                             showDeleteConfirmation.value = false
                             onEdit()
                         }
@@ -296,4 +310,6 @@ class MainActivity : ComponentActivity() {
             }
         )
     }
+
+
 }

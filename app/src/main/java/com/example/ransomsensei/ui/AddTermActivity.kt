@@ -101,7 +101,10 @@ class AddTermActivity : ComponentActivity() {
                                             && difficulty.value != Difficulty.UNKNOWN,
                                     onClick = {
                                             scope.launch {
-                                            RansomSenseiDatabase.getInstance(context).cardDao().insertCards(Card(
+                                            RansomSenseiDatabase
+                                                .getInstance(context)
+                                                .cardDao()
+                                                .insertCards(Card(
                                                     uid = null,
                                                     kanaValue = kanaValue.value,
                                                     kanjiValue = kanjiValue.value,
