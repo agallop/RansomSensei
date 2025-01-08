@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 class EditCardSetActivity : ComponentActivity() {
 
     companion object {
-        val CARD_SET_ID_EXTRA = "CARD_SET_ID_ENTRA"
+        const val CARD_SET_ID_EXTRA = "CARD_SET_ID_EXTRA"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ class EditCardSetActivity : ComponentActivity() {
                     LaunchedEffect(key1 = Unit) {
                         val cardSet = RansomSenseiDatabase.getInstance(context).cardSetDao()
                             .getCardSet(cardSetId)
-                        name.value = cardSet.cardSetName!!
+                        name.value = cardSet.cardSetName
                         status.value = cardSet.cardSetStatus
                     }
 
@@ -60,7 +60,7 @@ class EditCardSetActivity : ComponentActivity() {
                     ) {
                         TextField(
                             modifier = Modifier.padding(10.dp),
-                            label = { Text(text = "Kanji value") },
+                            label = { Text(text = "Set name") },
                             value = name.value,
                             onValueChange = { name.value = it })
 
@@ -77,7 +77,7 @@ class EditCardSetActivity : ComponentActivity() {
 
                         Row {
                             Button(
-                                content = { Text(text = "Add") },
+                                content = { Text(text = "Done") },
                                 enabled = name.value.isNotEmpty()
                                         && status.value != CardSetStatus.UNKNOWN,
                                 onClick = {
@@ -85,7 +85,7 @@ class EditCardSetActivity : ComponentActivity() {
                                         RansomSenseiDatabase
                                             .getInstance(context)
                                             .cardSetDao()
-                                            .insertCardSet(
+                                            .updateCardSet(
                                                 CardSet(
                                                     cardSetId = cardSetId,
                                                     cardSetName = name.value,

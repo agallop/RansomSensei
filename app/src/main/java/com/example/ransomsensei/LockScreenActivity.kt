@@ -20,11 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.theme.AppTheme
 import kotlin.random.Random
+import kotlin.text.isNotEmpty
 
 class LockScreenActivity : ComponentActivity() {
 
@@ -42,7 +45,7 @@ class LockScreenActivity : ComponentActivity() {
 
                 LaunchedEffect(key1 = Unit) {
                     homeActivityPackage.value = dataStoreManager.getHomeActivity()
-                    val cards = RansomSenseiDatabase.getInstance(context).cardDao().getAll()
+                    val cards = RansomSenseiDatabase.getInstance(context).cardDao().getAllActive()
                     if (cards.isNotEmpty()) {
                         card.value = cards[Random.nextInt(cards.size)]
                     }
@@ -59,6 +62,8 @@ class LockScreenActivity : ComponentActivity() {
                             BasicQuestion(card.value!!, homeActivityPackage.value)
                         } else {
                             Button(content = {Text("Proceed")}, onClick = {
+                                val intent = Intent(Intent.ACTION_MAIN)
+                                intent.addCategory(Intent.CATEGORY_HOME)
                                 if (homeActivityPackage.value.isNotEmpty()) {
                                     intent.setPackage(homeActivityPackage.value)
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -67,6 +72,7 @@ class LockScreenActivity : ComponentActivity() {
                                     val chooser = Intent.createChooser(intent, /* title */ null)
                                     startActivity(chooser)
                                 }
+                                finish()
                             })
                             }
                         }
@@ -76,24 +82,16 @@ class LockScreenActivity : ComponentActivity() {
         }
     }
 
-
-
-
-
-
-
-
-
     @Composable
     fun BasicQuestion(card: Card, homeActivityPackage: String) {
         var response = remember { mutableStateOf("") }
 
         var card = remember { card }
             Row {
-                Text(card.kanjiValue?: "")
+                Text(card.kanjiValue)
             }
             Row {
-                Text(card.kanaValue?: "")
+                Text(card.kanaValue)
             }
 
             TextField(
@@ -101,7 +99,7 @@ class LockScreenActivity : ComponentActivity() {
                 onValueChange = { response.value = it })
 
             Button(onClick = {
-                if (response.value == (card.englishValue ?: "")) {
+                if (response.value.toLowerCase(Locale.current) == (card.englishValue.toLowerCase(Locale.current))) {
                     val intent = Intent(Intent.ACTION_MAIN)
                     intent.addCategory(Intent.CATEGORY_HOME)
                     if (homeActivityPackage.isNotEmpty()) {

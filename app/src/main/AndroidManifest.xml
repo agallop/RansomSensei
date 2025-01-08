@@ -50,18 +50,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddTermActivity"
+            android:name=".ui.AddTermActivity"
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >
         </activity>
         <activity
-            android:name=".EditTermActivity"
+            android:name=".ui.EditTermActivity"
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >
         </activity>
 
         <activity
             android:name=".ui.cardset.AddCardSetActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RansomSensei.NoActionBar" >
+        </activity>
+
+
+        <activity
+            android:name=".ui.cardset.EditCardSetActivity"
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >
         </activity>

@@ -17,10 +17,10 @@ enum class Difficulty {UNKNOWN, EASY, MEDIUM, HARD}
     )])
 data class Card (
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "card_id") val cardId: Int,
-    @ColumnInfo(name = "card_set_id") val cardSetId: Int,
-    @ColumnInfo(name = "kana_value") val kanaValue: String?,
-    @ColumnInfo(name = "kanji_value") val kanjiValue: String?,
-    @ColumnInfo(name = "english_value") val englishValue: String?,
-    @ColumnInfo(name = "difficulty") val difficulty: Difficulty?,
+    @ColumnInfo(name = "card_id") val cardId: Int = 0,
+    @ColumnInfo(name = "card_set_id") val cardSetId: Int = 0,
+    @ColumnInfo(name = "kana_value") val kanaValue: String = "",
+    @ColumnInfo(name = "kanji_value") val kanjiValue: String = "",
+    @ColumnInfo(name = "english_value") val englishValue: String = "",
+    @ColumnInfo(name = "difficulty") val difficulty: Difficulty = Difficulty.UNKNOWN,
 )

@@ -41,26 +41,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import com.example.ransomsensei.AddTermActivity
-import com.example.ransomsensei.EditTermActivity
 import com.example.ransomsensei.WelcomeActivity
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
-import com.example.ransomsensei.data.entity.Difficulty
+import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.theme.AppTheme
+import com.example.ransomsensei.ui.AddTermActivity
+import com.example.ransomsensei.ui.EditTermActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class CardSetActivity : ComponentActivity() {
 
     companion object {
-        val CARD_SET_ID_EXTRA = "CARD_SET_ID"
+        const val CARD_SET_ID_EXTRA = "CARD_SET_ID"
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -70,13 +69,14 @@ class CardSetActivity : ComponentActivity() {
 
     setContent {
         AppTheme {
-            val WelcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
+            val welcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
 
             val context = LocalContext.current
             val dataStoreManager = RansomSenseiDataStoreManager(context = context)
             val needToSetHomeActivity = remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
             val database = RansomSenseiDatabase.getInstance(context)
+            val cardSet = remember { mutableStateOf(CardSet.getDefaultInstance()) }
             val cards = remember { mutableStateOf<List<Card>>(listOf()) }
             val isLoading = remember { mutableStateOf(true) }
             val selectedCards = remember { mutableStateMapOf<Card, Boolean>() }
@@ -84,6 +84,7 @@ class CardSetActivity : ComponentActivity() {
             LaunchedEffect(key1 = Unit) {
                 needToSetHomeActivity.value = dataStoreManager.getHomeActivity().isEmpty()
                 cards.value = database.cardDao().getCardsInSet(cardSetId = cardSetId)
+                cardSet.value = database.cardSetDao().getCardSet(cardSetId)
                 isLoading.value = false
             }
 
@@ -95,13 +96,13 @@ class CardSetActivity : ComponentActivity() {
                             titleContentColor = MaterialTheme.colorScheme.primary,
                         ),
                         title = {
-                            Text("Ransom Sensei")
+                            Text(cardSet.value.cardSetName)
                         },
                         actions =
                         {
-                            if (selectedCards.isEmpty()) NoSelectedItemsNavigationBarActions {
+                            if (selectedCards.isEmpty()) NoSelectedItemsNavigationBarActions(cardSetId) {
                                 scope.launch {
-                                    cards.value = database.cardDao().getAll()
+                                    cards.value = database.cardDao().getCardsInSet(cardSetId = cardSetId)
                                 }
                                 selectedCards.clear()
                             }
@@ -111,7 +112,7 @@ class CardSetActivity : ComponentActivity() {
                                 database
                             ) {
                                 scope.launch {
-                                    cards.value = database.cardDao().getAll()
+                                    cards.value = database.cardDao().getCardsInSet(cardSetId = cardSetId)
                                 }
                                 selectedCards.clear()
                             }
@@ -148,7 +149,7 @@ class CardSetActivity : ComponentActivity() {
 
                     if (needToSetHomeActivity.value) {
                         needToSetHomeActivity.value = false
-                        startActivity(WelcomeActivityIntent)
+                        startActivity(welcomeActivityIntent)
                     }
                 }
             }
@@ -166,7 +167,7 @@ class CardSetActivity : ComponentActivity() {
         val haptics = LocalHapticFeedback.current
 
         Card(
-            border = BorderStroke(1.dp, Color.Black),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .padding(4.dp)
@@ -187,30 +188,31 @@ class CardSetActivity : ComponentActivity() {
                     ),
                 overlineContent = {
                     Text(
-                        text = card.kanaValue ?: "",
+                        text = card.kanaValue,
                         style = MaterialTheme.typography.bodySmall
                     )
 
                 },
                 headlineContent = {
                     Text(
-                        text = card.kanjiValue ?: "",
+                        text = card.kanjiValue,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
                 supportingContent = {
                     Text(
-                        text = card.englishValue ?: "",
+                        text = card.englishValue,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 },
-                trailingContent = { Text((card.difficulty ?: Difficulty.EASY).name) })
+                trailingContent = { Text((card.difficulty).name) })
         }
     }
 
     @Composable
-    fun NoSelectedItemsNavigationBarActions(onEdit: () -> Unit) {
+    fun NoSelectedItemsNavigationBarActions(cardSetId: Int, onEdit: () -> Unit) {
         val addTermActivityIntent = Intent(this, AddTermActivity::class.java)
+        addTermActivityIntent.putExtra(AddTermActivity.CARD_SET_ID_EXTRA, cardSetId)
         val activity = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -288,7 +290,7 @@ class CardSetActivity : ComponentActivity() {
                     text = if (cardCount == 1)
                         "Are you sure you want to delete this item?"
                     else
-                        "Are you sure you want to delete these ${cardCount} items?"
+                        "Are you sure you want to delete these $cardCount items?"
                 )
             },
             onDismissRequest = {

@@ -1,4 +1,4 @@
-package com.example.ransomsensei
+package com.example.ransomsensei.ui
 
 import android.os.Bundle
 
@@ -31,9 +31,15 @@ import kotlinx.coroutines.launch
 
 class AddTermActivity : ComponentActivity() {
 
+    companion object {
+        const val CARD_SET_ID_EXTRA = "CARD_SET_ID_EXTRA"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val cardSetId = intent.getIntExtra(CARD_SET_ID_EXTRA, 0)
+
 
         setContent{
             AppTheme {
@@ -105,7 +111,8 @@ class AddTermActivity : ComponentActivity() {
                                                 .getInstance(context)
                                                 .cardDao()
                                                 .insertCards(Card(
-                                                    uid = null,
+                                                    cardId = 0,
+                                                    cardSetId = cardSetId,
                                                     kanaValue = kanaValue.value,
                                                     kanjiValue = kanjiValue.value,
                                                     englishValue = englishValue.value,

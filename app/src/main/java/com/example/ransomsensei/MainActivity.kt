@@ -30,6 +30,7 @@ import com.example.ransomsensei.data.RansomSenseiDatabase
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -46,17 +47,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.example.ransomsensei.data.entity.CardSet
+import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
+import com.example.ransomsensei.ui.cardset.AddCardSetActivity
 import com.example.ransomsensei.ui.cardset.CardSetActivity
+import com.example.ransomsensei.ui.cardset.EditCardSetActivity
 import kotlinx.coroutines.CoroutineScope
 
 class MainActivity : ComponentActivity() {
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                val WelcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
+                val welcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
 
                 val context = LocalContext.current
                 val dataStoreManager = RansomSenseiDataStoreManager(context = context)
@@ -128,7 +130,6 @@ class MainActivity : ComponentActivity() {
                                         it,
                                         true
                                     ) else selectedCardSets.remove(it)
-
                                 }
                             )
                         }
@@ -142,7 +143,7 @@ class MainActivity : ComponentActivity() {
 
                         if (needToSetHomeActivity.value) {
                             needToSetHomeActivity.value = false
-                            startActivity(WelcomeActivityIntent)
+                            startActivity(welcomeActivityIntent)
                         }
                     }
                 }
@@ -160,7 +161,7 @@ class MainActivity : ComponentActivity() {
         val haptics = LocalHapticFeedback.current
 
         Card(
-            border = BorderStroke(1.dp, Color.Black),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .padding(4.dp)
@@ -183,20 +184,41 @@ class MainActivity : ComponentActivity() {
                     ListItemDefaults.colors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     ),
+                overlineContent = {
+                    Text(
+                        text =
+                        if (cardSet.cardSetStatus == CardSetStatus.ENABLED)
+                            "Active"
+                        else
+                            "Inactive",
+                        color =
+                        if (cardSet.cardSetStatus == CardSetStatus.ENABLED)
+                            MaterialTheme.colorScheme.onSurface
+                        else
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+
+                    )
+                },
+
                 headlineContent = {
                     Text(
-                        text = cardSet.cardSetName ?: "",
+                        text = cardSet.cardSetName,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                trailingContent = { Text((cardSet.cardSetStatus).name) })
-        }
+                supportingContent = { Text("Terms: ${cardSet.cardCount}") },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Navigate to Set"
+                    )
+                })
         }
     }
 
     @Composable
     fun NoSelectedItemsNavigationBarActions(onEdit: () -> Unit) {
-        val addCardSetActivity = Intent(this, AddTermActivity::class.java)
+        val addCardSetIntent = Intent(this, AddCardSetActivity::class.java)
         val activity = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -206,7 +228,7 @@ class MainActivity : ComponentActivity() {
         }
 
         IconButton(onClick = {
-            activity.launch(addTermActivityIntent)
+            activity.launch(addCardSetIntent)
         }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
     }
 
@@ -218,7 +240,7 @@ class MainActivity : ComponentActivity() {
         onEdit: () -> Unit
     ) {
         val showDeleteConfirmation = remember { mutableStateOf(false) }
-        val editTermActivityIntent = Intent(this, EditTermActivity::class.java)
+        val editCardSetActivity = Intent(this, EditCardSetActivity::class.java)
 
 
         val activity = rememberLauncherForActivityResult(
@@ -235,8 +257,11 @@ class MainActivity : ComponentActivity() {
         IconButton(
             enabled = cardSets.size == 1,
             onClick = {
-                editTermActivityIntent.putExtra(EditTermActivity.CARD_ID_EXTRA, cards.single().cardId)
-                activity.launch(editTermActivityIntent)
+                editCardSetActivity.putExtra(
+                    EditCardSetActivity.CARD_SET_ID_EXTRA,
+                    cardSets.single().cardSetId
+                )
+                activity.launch(editCardSetActivity)
 
             }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
 
@@ -274,7 +299,7 @@ class MainActivity : ComponentActivity() {
                     text = if (cardCount == 1)
                         "Are you sure you want to delete this item?"
                     else
-                        "Are you sure you want to delete these ${cardCount} items?"
+                        "Are you sure you want to delete these $cardCount items?"
                 )
             },
             onDismissRequest = {

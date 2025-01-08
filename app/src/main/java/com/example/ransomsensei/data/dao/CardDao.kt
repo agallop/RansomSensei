@@ -13,6 +13,11 @@ interface CardDao {
     @Query("SELECT * FROM Card")
     suspend fun getAll(): List<Card>
 
+    @Query("SELECT * FROM Card " +
+            "INNER JOIN CardSet Using (card_set_id)" +
+            "WHERE card_set_status = 'ENABLED'")
+    suspend fun getAllActive(): List<Card>
+
     @Query("SELECT * FROM Card WHERE difficulty = 'EASY'")
     suspend fun loadAllEasy(): List<Card>
 
@@ -24,12 +29,6 @@ interface CardDao {
 
     @Query("SELECT * FROM Card WHERE card_set_id = :cardSetId")
     suspend fun getCardsInSet(cardSetId: Int): List<Card>
-
-    @Query("SELECT * FROM Card " +
-            "INNER JOIN CardSet " +
-            "Using (card_set_id) " +
-            "WHERE card_set_status = 'ENABLED'")
-    suspend fun getAllEnabledCards(): List<Card>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCards(vararg cards: Card)

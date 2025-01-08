@@ -1,4 +1,4 @@
-package com.example.ransomsensei
+package com.example.ransomsensei.ui
 
 import android.os.Bundle
 
@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
 class EditTermActivity : ComponentActivity() {
 
     companion object {
-        val CARD_ID_EXTRA = "CARD_ID"
+        const val CARD_ID_EXTRA = "CARD_ID"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,16 +46,18 @@ class EditTermActivity : ComponentActivity() {
                     val kanaValue = remember { mutableStateOf("") }
                     val englishValue = remember { mutableStateOf("") }
                     val difficulty = remember { mutableStateOf(Difficulty.UNKNOWN) }
+                    val cardSetId = remember { mutableIntStateOf(0) }
                     val scope = rememberCoroutineScope()
                     val context = LocalContext.current
 
                     LaunchedEffect(key1 = Unit) {
                         val card = RansomSenseiDatabase.getInstance(context).cardDao()
                             .getCard(cardId)
-                        kanaValue.value = card.kanaValue!!
-                        kanjiValue.value = card.kanjiValue!!
-                        englishValue.value = card.englishValue!!
-                        difficulty.value = card.difficulty!!
+                        kanaValue.value = card.kanaValue
+                        kanjiValue.value = card.kanjiValue
+                        englishValue.value = card.englishValue
+                        difficulty.value = card.difficulty
+                        cardSetId.intValue = card.cardSetId
                     }
 
                     Column(
@@ -110,6 +113,7 @@ class EditTermActivity : ComponentActivity() {
                                             .insertCards(
                                                 Card(
                                                     cardId = cardId,
+                                                    cardSetId = cardSetId.intValue,
                                                     kanaValue = kanaValue.value,
                                                     kanjiValue = kanjiValue.value,
                                                     englishValue = englishValue.value,
