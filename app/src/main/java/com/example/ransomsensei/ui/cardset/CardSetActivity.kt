@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -80,6 +81,7 @@ class CardSetActivity : ComponentActivity() {
             val cards = remember { mutableStateOf<List<Card>>(listOf()) }
             val isLoading = remember { mutableStateOf(true) }
             val selectedCards = remember { mutableStateMapOf<Card, Boolean>() }
+            val hasChanges = remember { mutableStateOf(false) }
 
             LaunchedEffect(key1 = Unit) {
                 needToSetHomeActivity.value = dataStoreManager.getHomeActivity().isEmpty()
@@ -98,11 +100,21 @@ class CardSetActivity : ComponentActivity() {
                         title = {
                             Text(cardSet.value.cardSetName)
                         },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                if(hasChanges.value)
+                                    setResult(RESULT_OK)
+                                finish()}) {
+                                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
+                            }
+                        },
                         actions =
                         {
                             if (selectedCards.isEmpty()) NoSelectedItemsNavigationBarActions(cardSetId) {
+                                hasChanges.value = true
                                 scope.launch {
                                     cards.value = database.cardDao().getCardsInSet(cardSetId = cardSetId)
+                                    cardSet.value = database.cardSetDao().getCardSet(cardSetId)
                                 }
                                 selectedCards.clear()
                             }
@@ -112,12 +124,12 @@ class CardSetActivity : ComponentActivity() {
                                 database
                             ) {
                                 scope.launch {
+                                    hasChanges.value = true
                                     cards.value = database.cardDao().getCardsInSet(cardSetId = cardSetId)
                                 }
                                 selectedCards.clear()
                             }
                         }
-
                     )
                 }) { padding ->
                 LazyColumn(
@@ -131,11 +143,16 @@ class CardSetActivity : ComponentActivity() {
                             card = it,
                             selected = selectedCards.contains(it),
                             onSelectionChange = { selected ->
-                                if (selected) selectedCards.put(
-                                    it,
-                                    true
-                                ) else selectedCards.remove(it)
-
+                                if (selected) selectedCards[it] = true else selectedCards.remove(it)
+                            },
+                            onEdit = {
+                                scope.launch {
+                                    cards.value = cards.value.map { oldCard ->
+                                        if (oldCard.cardId == it.cardId)
+                                            database.cardDao().getCard(cardId = it.cardId)
+                                        else oldCard
+                                    }
+                                }
                             }
                         )
                     }
@@ -161,10 +178,20 @@ class CardSetActivity : ComponentActivity() {
     fun CardItem(
         card: Card,
         selected: Boolean = false,
-        onSelectionChange: (Boolean) -> Unit
+        onSelectionChange: (Boolean) -> Unit,
+        onEdit: () -> Unit
     ) {
 
+        val activity = rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                onEdit()
+            }
+        }
         val haptics = LocalHapticFeedback.current
+        val editTermActivityIntent = Intent(this, EditTermActivity::class.java)
+        editTermActivityIntent.putExtra(EditTermActivity.CARD_ID_EXTRA, card.cardId)
 
         Card(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -173,6 +200,7 @@ class CardSetActivity : ComponentActivity() {
                 .padding(4.dp)
                 .combinedClickable(
                     onClick = {
+                        activity.launch(editTermActivityIntent)
                     },
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -210,16 +238,23 @@ class CardSetActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NoSelectedItemsNavigationBarActions(cardSetId: Int, onEdit: () -> Unit) {
+    fun NoSelectedItemsNavigationBarActions(cardSetId: Int, onChange: () -> Unit) {
         val addTermActivityIntent = Intent(this, AddTermActivity::class.java)
         addTermActivityIntent.putExtra(AddTermActivity.CARD_SET_ID_EXTRA, cardSetId)
+        val editCardSetActivityIntent = Intent(this, EditCardSetActivity::class.java)
+        editCardSetActivityIntent.putExtra(EditCardSetActivity.CARD_SET_ID_EXTRA, cardSetId)
         val activity = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                onEdit()
+                onChange()
             }
         }
+
+
+        IconButton(onClick = {
+            activity.launch(editCardSetActivityIntent)
+        }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
 
         IconButton(onClick = {
             activity.launch(addTermActivityIntent)
@@ -248,14 +283,6 @@ class CardSetActivity : ComponentActivity() {
         IconButton(onClick = {
             showDeleteConfirmation.value = true
         }) { Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete button") }
-        IconButton(
-            enabled = cards.size == 1,
-            onClick = {
-                editTermActivityIntent.putExtra(EditTermActivity.CARD_ID_EXTRA, cards.single().cardId)
-                activity.launch(editTermActivityIntent)
-
-            }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
-
         when {
             showDeleteConfirmation.value ->
                 DeleteCardsAlertDialog(

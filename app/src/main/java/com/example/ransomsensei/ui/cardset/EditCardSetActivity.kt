@@ -8,11 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +41,7 @@ class EditCardSetActivity : ComponentActivity() {
         const val CARD_SET_ID_EXTRA = "CARD_SET_ID_EXTRA"
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,7 +49,23 @@ class EditCardSetActivity : ComponentActivity() {
 
         setContent{
             AppTheme {
-                Scaffold { padding ->
+                Scaffold (
+                        topBar = {
+                            CenterAlignedTopAppBar(
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    titleContentColor = MaterialTheme.colorScheme.primary,
+                                ),
+                                title = {
+                                    Text("Edit set")
+                                },
+                                navigationIcon = {
+                                    IconButton(onClick = {setResult(RESULT_CANCELED); finish()}) {
+                                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
+                                    }
+                                })
+                        }
+                        ) { padding ->
                     val name = remember { mutableStateOf("") }
                     val status = remember { mutableStateOf(CardSetStatus.ENABLED) }
                     val scope = rememberCoroutineScope()
@@ -68,11 +93,11 @@ class EditCardSetActivity : ComponentActivity() {
                             RadioButton(
                                 selected = status.value == CardSetStatus.ENABLED,
                                 onClick = { status.value = CardSetStatus.ENABLED })
-                            Text("Enabled")
+                            Text("Active")
                             RadioButton(
                                 selected = status.value == CardSetStatus.DISABLED,
                                 onClick = { status.value = CardSetStatus.DISABLED })
-                            Text("Disabled")
+                            Text("Inactive")
                         }
 
                         Row {

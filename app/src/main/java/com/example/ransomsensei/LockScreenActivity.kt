@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,18 +16,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
-import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.theme.AppTheme
-import kotlin.random.Random
+import com.example.ransomsensei.viewmodel.LockScreenViewModel
 import kotlin.text.isNotEmpty
 
 class LockScreenActivity : ComponentActivity() {
@@ -36,20 +36,21 @@ class LockScreenActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
+                val context = LocalContext.current;
+                val viewModel: LockScreenViewModel by viewModels {
+                    object : ViewModelProvider.Factory {
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            val database = RansomSenseiDatabase.getInstance(context)
+                            val dataStoreManager = RansomSenseiDataStoreManager(context)
+                            return LockScreenViewModel(database, dataStoreManager) as T
+                        }
+                    }
+                }
+
                 Scaffold {  padding ->
-                    val context = LocalContext.current
-                    val dataStoreManager = RansomSenseiDataStoreManager(context = context)
-                    var homeActivityPackage = remember { mutableStateOf("") }
-                    var isLoading = remember { mutableStateOf(true) }
-                    var card = remember { mutableStateOf<Card?>(null) }
 
                 LaunchedEffect(key1 = Unit) {
-                    homeActivityPackage.value = dataStoreManager.getHomeActivity()
-                    val cards = RansomSenseiDatabase.getInstance(context).cardDao().getAllActive()
-                    if (cards.isNotEmpty()) {
-                        card.value = cards[Random.nextInt(cards.size)]
-                    }
-                    isLoading.value = false
+                    viewModel.loadQuestion()
                 }
 
                 Column(
@@ -57,15 +58,27 @@ class LockScreenActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    if(!isLoading.value) {
-                        if (card.value != null) {
-                            BasicQuestion(card.value!!, homeActivityPackage.value)
+                    if(!viewModel.isLoading) {
+                        if (viewModel.showQuestion) {
+                            BasicQuestion(viewModel) {
+                                val intent = Intent(Intent.ACTION_MAIN)
+                                intent.addCategory(Intent.CATEGORY_HOME)
+                                if (viewModel.homeActivityPackage.isNotEmpty()) {
+                                    intent.setPackage(viewModel.homeActivityPackage)
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    startActivity(intent)
+                                } else {
+                                    val chooser = Intent.createChooser(intent, /* title */ null)
+                                    startActivity(chooser)
+                                }
+                                viewModel.updateLastInteraction()
+                            }
                         } else {
                             Button(content = {Text("Proceed")}, onClick = {
                                 val intent = Intent(Intent.ACTION_MAIN)
                                 intent.addCategory(Intent.CATEGORY_HOME)
-                                if (homeActivityPackage.value.isNotEmpty()) {
-                                    intent.setPackage(homeActivityPackage.value)
+                                if (viewModel.homeActivityPackage.isNotEmpty()) {
+                                    intent.setPackage(viewModel.homeActivityPackage)
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     startActivity(intent)
                                 } else {
@@ -83,34 +96,22 @@ class LockScreenActivity : ComponentActivity() {
     }
 
     @Composable
-    fun BasicQuestion(card: Card, homeActivityPackage: String) {
-        var response = remember { mutableStateOf("") }
-
-        var card = remember { card }
+    fun BasicQuestion(viewModel: LockScreenViewModel, onCompletion: () -> Unit) {
             Row {
-                Text(card.kanjiValue)
+                Text(viewModel.card!!.kanjiValue)
             }
             Row {
-                Text(card.kanaValue)
+                Text(viewModel.card!!.kanaValue)
             }
 
             TextField(
-                value = response.value,
-                onValueChange = { response.value = it })
+                value = viewModel.currentAnswer,
+                onValueChange = { viewModel.setAnswer(it) })
 
             Button(onClick = {
-                if (response.value.toLowerCase(Locale.current) == (card.englishValue.toLowerCase(Locale.current))) {
-                    val intent = Intent(Intent.ACTION_MAIN)
-                    intent.addCategory(Intent.CATEGORY_HOME)
-                    if (homeActivityPackage.isNotEmpty()) {
-                        intent.setPackage(homeActivityPackage)
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    } else {
-                        val chooser = Intent.createChooser(intent, /* title */ null)
-                        startActivity(chooser)
-                    }
-                    finish()
+                if (viewModel.currentAnswer.toLowerCase(Locale.current) ==
+                    (viewModel.card!!.englishValue.toLowerCase(Locale.current))) {
+                    onCompletion()
                 }
             }) { Text("Check my answer") }
         }

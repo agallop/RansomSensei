@@ -1,17 +1,16 @@
 package com.example.ransomsensei
 
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,19 +20,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -46,17 +41,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.cardset.AddCardSetActivity
 import com.example.ransomsensei.ui.cardset.CardSetActivity
-import com.example.ransomsensei.ui.cardset.EditCardSetActivity
-import kotlinx.coroutines.CoroutineScope
+import com.example.ransomsensei.viewmodel.MainScreenViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -69,18 +64,19 @@ class MainActivity : ComponentActivity() {
                 val welcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
 
                 val context = LocalContext.current
-                val dataStoreManager = RansomSenseiDataStoreManager(context = context)
+                val viewModel: MainScreenViewModel by viewModels {
+                    object : ViewModelProvider.Factory {
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            val database = RansomSenseiDatabase.getInstance(context)
+                            val dataStoreManager = RansomSenseiDataStoreManager(context)
+                            return MainScreenViewModel(database, dataStoreManager) as T
+                        }
+                    }
+                }
                 val needToSetHomeActivity = remember { mutableStateOf(false) }
-                val scope = rememberCoroutineScope()
-                val database = RansomSenseiDatabase.getInstance(context)
-                val cardSets = remember { mutableStateOf<List<CardSet>>(listOf()) }
-                val isLoading = remember { mutableStateOf(true) }
-                val selectedCardSets = remember { mutableStateMapOf<CardSet, Boolean>() }
 
                 LaunchedEffect(key1 = Unit) {
-                    needToSetHomeActivity.value = dataStoreManager.getHomeActivity().isEmpty()
-                    cardSets.value = database.cardSetDao().getAll()
-                    isLoading.value = false
+                    viewModel.loadCardSets()
                 }
 
                 Scaffold(
@@ -95,22 +91,12 @@ class MainActivity : ComponentActivity() {
                             },
                             actions =
                             {
-                                if (selectedCardSets.isEmpty()) NoSelectedItemsNavigationBarActions {
-                                    scope.launch {
-                                        cardSets.value = database.cardSetDao().getAll()
-                                    }
-                                    selectedCardSets.clear()
+                                if (viewModel.selectedCardSets.isEmpty()) {
+                                    NoSelectedItemsNavigationBarActions(viewModel)
                                 }
                                 else SelectedItemsNavigationBarActions(
-                                    selectedCardSets.keys,
-                                    scope,
-                                    database
-                                ) {
-                                    scope.launch {
-                                        cardSets.value = database.cardSetDao().getAll()
-                                    }
-                                    selectedCardSets.clear()
-                                }
+                                    viewModel
+                                )
                             }
 
                         )
@@ -121,30 +107,17 @@ class MainActivity : ComponentActivity() {
                             .padding(padding),
                         verticalArrangement = Arrangement.Top
                     ) {
-                        items(cardSets.value) {
+                        items(viewModel.cardSets) {
                             CardSetCard(
                                 cardSet = it,
-                                selected = selectedCardSets.contains(it),
-                                onSelectionChange = { selected ->
-                                    if (selected) selectedCardSets.put(
-                                        it,
-                                        true
-                                    ) else selectedCardSets.remove(it)
-                                }
+                                viewModel
                             )
                         }
                     }
 
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        if (needToSetHomeActivity.value) {
-                            needToSetHomeActivity.value = false
-                            startActivity(welcomeActivityIntent)
-                        }
+                    if (viewModel.needToSetHomeActivity) {
+                        needToSetHomeActivity.value = false
+                        startActivity(welcomeActivityIntent)
                     }
                 }
             }
@@ -155,10 +128,16 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun CardSetCard(
         cardSet: CardSet,
-        selected: Boolean = false,
-        onSelectionChange: (Boolean) -> Unit
+        viewModel: MainScreenViewModel,
     ) {
         val haptics = LocalHapticFeedback.current
+        val activity = rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                viewModel.reloadCardSets()
+            }
+        }
 
         Card(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -169,16 +148,15 @@ class MainActivity : ComponentActivity() {
                     onClick = {
                         val cardSetIntent = Intent(this, CardSetActivity::class.java)
                         cardSetIntent.putExtra(CardSetActivity.CARD_SET_ID_EXTRA, cardSet.cardSetId)
-                        startActivity(cardSetIntent)
+                        activity.launch(cardSetIntent)
                     },
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onSelectionChange(!selected)
+                        viewModel.toggleCardSetSelection(cardSet)
                     })
         ) {
-
             ListItem(
-                colors = if (!selected)
+                colors = if (!viewModel.isCardSetSelected(cardSet))
                     ListItemDefaults.colors()
                 else
                     ListItemDefaults.colors(
@@ -217,13 +195,13 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NoSelectedItemsNavigationBarActions(onEdit: () -> Unit) {
+    fun NoSelectedItemsNavigationBarActions(viewModel: MainScreenViewModel) {
         val addCardSetIntent = Intent(this, AddCardSetActivity::class.java)
         val activity = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                onEdit()
+                viewModel.reloadCardSets()
             }
         }
 
@@ -234,49 +212,19 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun SelectedItemsNavigationBarActions(
-        cardSets: Set<CardSet>,
-        scope: CoroutineScope,
-        database: RansomSenseiDatabase,
-        onEdit: () -> Unit
+        viewModel: MainScreenViewModel
     ) {
-        val showDeleteConfirmation = remember { mutableStateOf(false) }
-        val editCardSetActivity = Intent(this, EditCardSetActivity::class.java)
-
-
-        val activity = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                onEdit()
-            }
-        }
-
         IconButton(onClick = {
-            showDeleteConfirmation.value = true
+            viewModel.showDeleteConfirmation()
         }) { Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete button") }
-        IconButton(
-            enabled = cardSets.size == 1,
-            onClick = {
-                editCardSetActivity.putExtra(
-                    EditCardSetActivity.CARD_SET_ID_EXTRA,
-                    cardSets.single().cardSetId
-                )
-                activity.launch(editCardSetActivity)
-
-            }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
-
         when {
-            showDeleteConfirmation.value ->
+            viewModel.showDeleteConfirmation->
                 DeleteCardsAlertDialog(
-                    cardCount = cardSets.size,
+                    cardCount = viewModel.selectedCardSets.size,
                     onConfirmation = {
-                        scope.launch {
-                            database.cardSetDao().deleteCardSets(cardSets)
-                            showDeleteConfirmation.value = false
-                            onEdit()
-                        }
+                        viewModel.deleteSelectedCardSets()
                     },
-                    onDismiss = { showDeleteConfirmation.value = false }
+                    onDismiss = { viewModel.hideDeleteConfirmation() }
                 )
         }
     }

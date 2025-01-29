@@ -40,7 +40,6 @@ abstract class RansomSenseiDatabase : RoomDatabase() {
                         .addCallback(object : Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
                                 super.onCreate(db)
-                                println("HERE\nHERE\nHERE")
                                 db.execSQL(
                                     """
                                         CREATE TRIGGER IF NOT EXISTS update_card_set_count AFTER INSERT ON Card
@@ -58,7 +57,6 @@ abstract class RansomSenseiDatabase : RoomDatabase() {
 
                             override fun onOpen(db: SupportSQLiteDatabase) {
                                 super.onOpen(db)
-                                println("HERE2\nHERE2\nHERE2")
 
                                 db.execSQL(
                                     """
