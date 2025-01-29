@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -19,9 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.example.ransomsensei.data.RansomSenseiDataStoreManager
-import com.example.ransomsensei.data.RansomSenseiDatabase
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -42,14 +38,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.cardset.AddCardSetActivity
 import com.example.ransomsensei.ui.cardset.CardSetActivity
 import com.example.ransomsensei.viewmodel.MainScreenViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -58,19 +53,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val viewModel = koinViewModel<MainScreenViewModel>()
+
             AppTheme {
                 val welcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
-
-                val context = LocalContext.current
-                val viewModel: MainScreenViewModel by viewModels {
-                    object : ViewModelProvider.Factory {
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            val database = RansomSenseiDatabase.getInstance(context)
-                            val dataStoreManager = RansomSenseiDataStoreManager(context)
-                            return MainScreenViewModel(database, dataStoreManager) as T
-                        }
-                    }
-                }
 
                 LaunchedEffect(key1 = Unit) {
                     viewModel.loadCardSets()

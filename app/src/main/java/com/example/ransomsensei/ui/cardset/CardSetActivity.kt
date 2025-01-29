@@ -49,6 +49,7 @@ import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.AddTermActivity
 import com.example.ransomsensei.ui.EditTermActivity
 import com.example.ransomsensei.viewmodel.cardset.CardSetViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class CardSetActivity : ComponentActivity() {
 
@@ -62,19 +63,11 @@ class CardSetActivity : ComponentActivity() {
         val cardSetId = intent.getIntExtra(CARD_SET_ID_EXTRA, 0)
 
     setContent {
-        AppTheme {
-            val context = LocalContext.current
-            val viewModel: CardSetViewModel by viewModels {
-                object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        val database = RansomSenseiDatabase.getInstance(context)
-                        return CardSetViewModel(cardSetId, database) as T
-                    }
-                }
-            }
+        val viewModel = koinViewModel<CardSetViewModel>()
 
+        AppTheme {
             LaunchedEffect(key1 = Unit) {
-                viewModel.loadCards()
+                viewModel.loadCards(cardSetId)
             }
 
             Scaffold(

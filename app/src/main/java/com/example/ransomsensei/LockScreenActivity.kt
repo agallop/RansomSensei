@@ -27,6 +27,7 @@ import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.viewmodel.LockScreenViewModel
+import org.koin.androidx.compose.koinViewModel
 import kotlin.text.isNotEmpty
 
 class LockScreenActivity : ComponentActivity() {
@@ -36,16 +37,7 @@ class LockScreenActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                val context = LocalContext.current;
-                val viewModel: LockScreenViewModel by viewModels {
-                    object : ViewModelProvider.Factory {
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            val database = RansomSenseiDatabase.getInstance(context)
-                            val dataStoreManager = RansomSenseiDataStoreManager(context)
-                            return LockScreenViewModel(database, dataStoreManager) as T
-                        }
-                    }
-                }
+                val viewModel = koinViewModel<LockScreenViewModel>()
 
                 Scaffold {  padding ->
 

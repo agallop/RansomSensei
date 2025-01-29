@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
@@ -13,9 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CardSetViewModel(
-    val cardSetId: Int,
     private val database: RansomSenseiDatabase) : ViewModel() {
-
+        var cardSetId by mutableStateOf(0)
+            private set
         var cardSet by mutableStateOf<CardSet>(CardSet.getDefaultInstance())
             private set
         var cards by mutableStateOf<List<Card>>(listOf())
@@ -27,7 +26,8 @@ class CardSetViewModel(
     var showDeleteConfirmation by mutableStateOf(false)
         private set
 
-        fun loadCards() {
+        fun loadCards(cardSetId: Int) {
+            this.cardSetId = cardSetId
             CoroutineScope(Dispatchers.IO).launch {
                 cardSet = database.cardSetDao().getCardSet(cardSetId)
                 cards = database.cardDao().getCardsInSet(cardSetId)
