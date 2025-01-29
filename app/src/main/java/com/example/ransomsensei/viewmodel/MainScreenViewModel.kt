@@ -63,4 +63,8 @@ private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
             showDeleteConfirmation = false
         }
     }
+
+    fun showHomeActivityWelcome() {
+        needToSetHomeActivity = false;
+    }
 }
