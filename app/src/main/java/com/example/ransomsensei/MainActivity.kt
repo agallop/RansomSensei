@@ -81,7 +81,6 @@ class MainActivity : ComponentActivity() {
                                     viewModel
                                 )
                             }
-
                         )
                     }) { padding ->
                     LazyColumn(
@@ -158,7 +157,7 @@ class MainActivity : ComponentActivity() {
                         else
                             MaterialTheme.colorScheme.onSurfaceVariant,
 
-                    )
+                        )
                 },
 
                 headlineContent = {
@@ -201,7 +200,7 @@ class MainActivity : ComponentActivity() {
             viewModel.showDeleteConfirmation()
         }) { Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete button") }
         when {
-            viewModel.showDeleteConfirmation->
+            viewModel.showDeleteConfirmation ->
                 DeleteCardsAlertDialog(
                     cardCount = viewModel.selectedCardSets.size,
                     onConfirmation = {

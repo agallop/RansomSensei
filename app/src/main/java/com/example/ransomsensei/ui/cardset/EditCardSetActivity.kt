@@ -22,18 +22,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.ransomsensei.data.RansomSenseiDatabase
-import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
+import com.example.ransomsensei.viewmodel.cardset.EditCardSetViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
 
 class EditCardSetActivity : ComponentActivity() {
 
@@ -46,78 +45,71 @@ class EditCardSetActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val cardSetId = intent.getIntExtra(CARD_SET_ID_EXTRA, 0)
-
-        setContent{
+        setContent {
+            val viewModel = koinViewModel<EditCardSetViewModel>()
             AppTheme {
-                Scaffold (
-                        topBar = {
-                            CenterAlignedTopAppBar(
-                                colors = TopAppBarDefaults.topAppBarColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    titleContentColor = MaterialTheme.colorScheme.primary,
-                                ),
-                                title = {
-                                    Text("Edit set")
-                                },
-                                navigationIcon = {
-                                    IconButton(onClick = {setResult(RESULT_CANCELED); finish()}) {
-                                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
-                                    }
-                                })
-                        }
-                        ) { padding ->
-                    val name = remember { mutableStateOf("") }
-                    val status = remember { mutableStateOf(CardSetStatus.ENABLED) }
-                    val scope = rememberCoroutineScope()
-                    val context = LocalContext.current
+                Scaffold(
+                    topBar = {
+                        CenterAlignedTopAppBar(
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            title = {
+                                Text("Edit set")
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = { setResult(RESULT_CANCELED); finish() }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back button"
+                                    )
+                                }
+                            })
+                    }
+                ) { padding ->
 
                     LaunchedEffect(key1 = Unit) {
-                        val cardSet = RansomSenseiDatabase.getInstance(context).cardSetDao()
-                            .getCardSet(cardSetId)
-                        name.value = cardSet.cardSetName
-                        status.value = cardSet.cardSetStatus
+                        viewModel.loadCardSet(cardSetId)
                     }
 
                     Column(
-                        modifier = Modifier.padding(padding).fillMaxSize(),
+                        modifier = Modifier
+                            .padding(padding)
+                            .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
                         TextField(
                             modifier = Modifier.padding(10.dp),
                             label = { Text(text = "Set name") },
-                            value = name.value,
-                            onValueChange = { name.value = it })
+                            value = viewModel.name,
+                            onValueChange = viewModel::onNameChange
+                        )
 
-                        Row (verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
-                                selected = status.value == CardSetStatus.ENABLED,
-                                onClick = { status.value = CardSetStatus.ENABLED })
+                                selected = viewModel.status == CardSetStatus.ENABLED,
+                                onClick = { viewModel.onStatusChange(CardSetStatus.ENABLED) })
                             Text("Active")
                             RadioButton(
-                                selected = status.value == CardSetStatus.DISABLED,
-                                onClick = { status.value = CardSetStatus.DISABLED })
+                                selected = viewModel.status == CardSetStatus.DISABLED,
+                                onClick = { viewModel.onStatusChange(CardSetStatus.DISABLED) })
                             Text("Inactive")
                         }
 
                         Row {
                             Button(
                                 content = { Text(text = "Done") },
-                                enabled = name.value.isNotEmpty()
-                                        && status.value != CardSetStatus.UNKNOWN,
+                                enabled = viewModel.name.isNotEmpty()
+                                        && viewModel.status != CardSetStatus.UNKNOWN,
                                 onClick = {
-                                    scope.launch {
-                                        RansomSenseiDatabase
-                                            .getInstance(context)
-                                            .cardSetDao()
-                                            .updateCardSet(
-                                                CardSet(
-                                                    cardSetId = cardSetId,
-                                                    cardSetName = name.value,
-                                                    cardSetStatus = status.value
-                                                ))
-                                        setResult(RESULT_OK)
-                                        finish()
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        viewModel.updateCardSet()
+                                        withContext(Dispatchers.Main) {
+                                            setResult(RESULT_OK)
+                                            finish()
+                                        }
                                     }
                                 })
                         }

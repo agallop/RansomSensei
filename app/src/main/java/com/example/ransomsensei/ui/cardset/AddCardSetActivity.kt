@@ -21,18 +21,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.ransomsensei.data.RansomSenseiDatabase
-import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
+import com.example.ransomsensei.viewmodel.cardset.AddCardSetViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
 
 class AddCardSetActivity : ComponentActivity() {
 
@@ -42,6 +41,7 @@ class AddCardSetActivity : ComponentActivity() {
 
     setContent{
         AppTheme {
+        val viewModel = koinViewModel<AddCardSetViewModel>()
             Scaffold (
                 topBar = {
                     CenterAlignedTopAppBar(
@@ -54,15 +54,12 @@ class AddCardSetActivity : ComponentActivity() {
                         },
                         navigationIcon = {
                             IconButton(onClick = {setResult(RESULT_CANCELED); finish()}) {
-                                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
+                                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back button")
                             }
                         })
                 }
             ) { padding ->
-                val name = remember { mutableStateOf("") }
-                val status = remember { mutableStateOf(CardSetStatus.ENABLED) }
-                val scope = rememberCoroutineScope()
-                val context = LocalContext.current
 
                 Column(
                     modifier = Modifier.padding(padding).fillMaxSize(),
@@ -72,38 +69,32 @@ class AddCardSetActivity : ComponentActivity() {
                     TextField(
                         modifier = Modifier.padding(10.dp),
                         label = { Text(text = "Set name") },
-                        value = name.value,
-                        onValueChange = { name.value = it })
+                        value = viewModel.cardSetName,
+                        onValueChange = { viewModel.cardSetName = it })
 
                     Row (verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
-                            selected = status.value == CardSetStatus.ENABLED,
-                            onClick = { status.value = CardSetStatus.ENABLED })
+                            selected = viewModel.status == CardSetStatus.ENABLED,
+                            onClick = { viewModel.status = CardSetStatus.ENABLED })
                         Text("Enabled")
                         RadioButton(
-                            selected = status.value == CardSetStatus.DISABLED,
-                            onClick = { status.value = CardSetStatus.DISABLED })
+                            selected = viewModel.status == CardSetStatus.DISABLED,
+                            onClick = { viewModel.status = CardSetStatus.DISABLED })
                         Text("Disabled")
                     }
 
                     Row {
                         Button(
                             content = { Text(text = "Add") },
-                            enabled = name.value.isNotEmpty()
-                                    && status.value != CardSetStatus.UNKNOWN,
+                            enabled = viewModel.cardSetName.isNotEmpty()
+                                    && viewModel.status != CardSetStatus.UNKNOWN,
                             onClick = {
-                                scope.launch {
-                                    RansomSenseiDatabase
-                                        .getInstance(context)
-                                        .cardSetDao()
-                                        .insertCardSet(
-                                            CardSet(
-                                            cardSetId = 0,
-                                            cardSetName = name.value,
-                                                cardSetStatus = status.value
-                                        ))
-                                    setResult(RESULT_OK)
-                                    finish()
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    viewModel.addCardSet()
+                                    withContext(Dispatchers.Main) {
+                                        setResult(RESULT_OK)
+                                        finish()
+                                    }
                                 }
                             })
                     }

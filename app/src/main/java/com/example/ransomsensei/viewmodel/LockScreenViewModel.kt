@@ -42,7 +42,7 @@ class LockScreenViewModel(
             homeActivityPackage = dataStoreManager.getHomeActivity()
             lastInteraction = dataStoreManager.getLastInteraction()
             showQuestion = card != null
-                && lastInteraction + frequencyCapMillis < System.currentTimeMillis()
+               // && lastInteraction + frequencyCapMillis < System.currentTimeMillis()
             isLoading = false
         }
     }

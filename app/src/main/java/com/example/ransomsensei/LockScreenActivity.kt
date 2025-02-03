@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,19 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.ransomsensei.data.RansomSenseiDataStoreManager
-import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.viewmodel.LockScreenViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -59,9 +54,11 @@ class LockScreenActivity : ComponentActivity() {
                                     intent.setPackage(viewModel.homeActivityPackage)
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     startActivity(intent)
+                                    finish()
                                 } else {
                                     val chooser = Intent.createChooser(intent, /* title */ null)
                                     startActivity(chooser)
+                                    finish()
                                 }
                                 viewModel.updateLastInteraction()
                             }
@@ -106,5 +103,6 @@ class LockScreenActivity : ComponentActivity() {
                     onCompletion()
                 }
             }) { Text("Check my answer") }
+            Surface(onClick = onCompletion) { Text("Skip for now")}
         }
 }

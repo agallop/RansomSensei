@@ -12,27 +12,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CardSetViewModel(
-    private val database: RansomSenseiDatabase) : ViewModel() {
-        var cardSetId by mutableStateOf(0)
-            private set
-        var cardSet by mutableStateOf<CardSet>(CardSet.getDefaultInstance())
-            private set
-        var cards by mutableStateOf<List<Card>>(listOf())
-            private set
+    private val database: RansomSenseiDatabase
+) : ViewModel() {
+    var cardSetId by mutableStateOf(0)
+        private set
+    var cardSet by mutableStateOf<CardSet>(CardSet.getDefaultInstance())
+        private set
+    var cards by mutableStateOf<List<Card>>(listOf())
+        private set
     var selectedCards by mutableStateOf<Set<Card>>(setOf())
         private set
-        var hasChanges by mutableStateOf(false)
-            private set
+    var hasChanges by mutableStateOf(false)
+        private set
     var showDeleteConfirmation by mutableStateOf(false)
         private set
 
-        fun loadCards(cardSetId: Int) {
-            this.cardSetId = cardSetId
-            CoroutineScope(Dispatchers.IO).launch {
-                cardSet = database.cardSetDao().getCardSet(cardSetId)
-                cards = database.cardDao().getCardsInSet(cardSetId)
-            }
+    fun loadCards(cardSetId: Int) {
+        this.cardSetId = cardSetId
+        CoroutineScope(Dispatchers.IO).launch {
+            cardSet = database.cardSetDao().getCardSet(cardSetId)
+            cards = database.cardDao().getCardsInSet(cardSetId)
         }
+    }
 
     fun reloadCards() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -46,17 +47,18 @@ class CardSetViewModel(
         }
     }
 
-        fun cardSetChanged() {
-            hasChanges = true
-        }
+    fun cardSetChanged() {
+        hasChanges = true
+    }
 
-        fun showDeleteConfirmation() {
-            showDeleteConfirmation = false
-        }
+    fun showDeleteConfirmation() {
+        showDeleteConfirmation = false
+    }
 
-        fun hideDeleteConfirmation() {
-            showDeleteConfirmation = false
-        }
+    fun hideDeleteConfirmation() {
+        showDeleteConfirmation = false
+    }
+
     fun deleteSelectedCards() {
         CoroutineScope(Dispatchers.IO).launch {
             database.cardDao().deleteCards(selectedCards.toList())
@@ -64,4 +66,4 @@ class CardSetViewModel(
             showDeleteConfirmation = false
         }
     }
-    }
+}
