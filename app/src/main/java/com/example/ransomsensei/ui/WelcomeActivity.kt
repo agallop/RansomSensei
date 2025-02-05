@@ -1,6 +1,5 @@
-package com.example.ransomsensei
+package com.example.ransomsensei.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.ui.SetDefaultAppActivity
 import com.google.accompanist.drawablepainter.DrawablePainter
 
 import kotlinx.coroutines.launch
@@ -99,31 +98,31 @@ class WelcomeActivity : ComponentActivity(){
                         if (label.isNotEmpty() &&
                             !packageInfo.activityInfo.packageName.contains("ransomsensei")
                         ) {
-                                androidx.compose.material3.Card(shape = MaterialTheme.shapes.medium){
+                            Card(shape = MaterialTheme.shapes.medium){
 
-                                    Row(
-                                        horizontalArrangement = Arrangement.Start,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth(fraction = 0.9f).padding(12.dp)
-                                    ) {
-                                    RadioButton(
-                                        onClick = {
-                                            selected.value = packageInfo.activityInfo.packageName
-                                        },
-                                        selected = selected.value == packageInfo.activityInfo.packageName
-                                    )
-                                    Image(
-                                        modifier = Modifier.padding((5.dp)),
-                                        painter = DrawablePainter(
-                                            packageInfo.loadIcon(
-                                                packageManager
-                                            )
-                                        ),
-                                        contentDescription = null
-                                    )
-                                    Text(label)
-                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth(fraction = 0.9f).padding(12.dp)
+                                ) {
+                                RadioButton(
+                                    onClick = {
+                                        selected.value = packageInfo.activityInfo.packageName
+                                    },
+                                    selected = selected.value == packageInfo.activityInfo.packageName
+                                )
+                                Image(
+                                    modifier = Modifier.padding((5.dp)),
+                                    painter = DrawablePainter(
+                                        packageInfo.loadIcon(
+                                            packageManager
+                                        )
+                                    ),
+                                    contentDescription = null
+                                )
+                                Text(label)
                             }
+                        }
                         }
                     }
 

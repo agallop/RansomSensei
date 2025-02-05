@@ -1,4 +1,4 @@
-package com.example.ransomsensei
+package com.example.ransomsensei.ui
 
 import android.content.Intent
 import android.os.Bundle

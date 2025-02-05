@@ -2,6 +2,7 @@ package com.example.ransomsensei.ui.cardset
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.compose.foundation.lazy.items
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -41,8 +41,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.ui.AddTermActivity
-import com.example.ransomsensei.ui.EditTermActivity
+import com.example.ransomsensei.ui.card.AddCardActivity
+import com.example.ransomsensei.ui.card.EditCardActivity
 import com.example.ransomsensei.viewmodel.cardset.CardSetViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -123,8 +123,8 @@ class CardSetActivity : ComponentActivity() {
             }
         }
         val haptics = LocalHapticFeedback.current
-        val editTermActivityIntent = Intent(this, EditTermActivity::class.java)
-        editTermActivityIntent.putExtra(EditTermActivity.CARD_ID_EXTRA, card.cardId)
+        val editTermActivityIntent = Intent(this, EditCardActivity::class.java)
+        editTermActivityIntent.putExtra(EditCardActivity.CARD_ID_EXTRA, card.cardId)
 
         Card(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -172,8 +172,8 @@ class CardSetActivity : ComponentActivity() {
 
     @Composable
     fun NoSelectedItemsNavigationBarActions(viewModel: CardSetViewModel) {
-        val addTermActivityIntent = Intent(this, AddTermActivity::class.java)
-        addTermActivityIntent.putExtra(AddTermActivity.CARD_SET_ID_EXTRA, viewModel.cardSetId)
+        val addTermActivityIntent = Intent(this, AddCardActivity::class.java)
+        addTermActivityIntent.putExtra(AddCardActivity.CARD_SET_ID_EXTRA, viewModel.cardSetId)
         val editCardSetActivityIntent = Intent(this, EditCardSetActivity::class.java)
         editCardSetActivityIntent.putExtra(EditCardSetActivity.CARD_SET_ID_EXTRA, viewModel.cardSetId)
         val activity = rememberLauncherForActivityResult(
