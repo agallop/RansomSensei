@@ -5,12 +5,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.viewmodel.LockScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -90,6 +92,8 @@ class LockScreenActivity : ComponentActivity() {
         updateLastInteraction: suspend () -> Unit,
         loadQuestion: () -> Unit
     ) {
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         Scaffold { padding ->
             LaunchedEffect(key1 = Unit) {
                 loadQuestion()
@@ -98,7 +102,8 @@ class LockScreenActivity : ComponentActivity() {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .imePadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -112,7 +117,7 @@ class LockScreenActivity : ComponentActivity() {
 
                 Row {
                     Text(
-                        text = "Translate to gain entry:", style = MaterialTheme.typography.titleLarge
+                        text = "Translate to gain entry", style = MaterialTheme.typography.titleLarge
                     )
                 }
                 AnimatedVisibility(visible = !isLoading) {
@@ -129,7 +134,6 @@ class LockScreenActivity : ComponentActivity() {
                                 currentAnswer = currentAnswer,
                                 currentCountDown = currentCountDown,
                                 onCurrentAnswerChange = onCurrentAnswerChange,
-                                isLoading = isLoading
                             ) {
                                 val intent = Intent(Intent.ACTION_MAIN)
                                 intent.addCategory(Intent.CATEGORY_HOME)
@@ -178,7 +182,6 @@ class LockScreenActivity : ComponentActivity() {
         englishValue: String,
         currentAnswer: String,
         allowSkip: Boolean,
-        isLoading: Boolean,
         currentCountDown: Flow<String>,
         onCurrentAnswerChange: (String) -> Unit,
         onCompletion: () -> Unit
@@ -187,7 +190,7 @@ class LockScreenActivity : ComponentActivity() {
         Card(
             modifier = Modifier
                 .padding(16.dp)
-                .width(240.dp)
+                .width(250.dp)
                 .height(80.dp)
         ) {
             Column(
@@ -236,8 +239,8 @@ class LockScreenActivity : ComponentActivity() {
                 loadQuestion = {},
                 updateLastInteraction = {},
                 homeActivityPackage = "",
-                allowSkip = false,
-                currentCountDown = flow { emit("10s") })
+                allowSkip = true,
+                currentCountDown = flow { })
         }
     }
 

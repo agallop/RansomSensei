@@ -34,7 +34,7 @@ class LockScreenViewModel(
     var showQuestion by mutableStateOf(false)
         private set
     var countdown = flow {
-        for (i in 10 downTo 1) {
+        for (i in 5 downTo 1) {
             val time = i.toDuration(DurationUnit.SECONDS)
             emit(time.toString())
             delay(1000)
