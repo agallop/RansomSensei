@@ -1,4 +1,4 @@
-package com.example.ransomsensei
+package com.example.ransomsensei.ui.card
 
 import android.os.Bundle
 
@@ -9,12 +9,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,33 +37,53 @@ import com.example.ransomsensei.data.entity.Difficulty
 import com.example.ransomsensei.theme.AppTheme
 import kotlinx.coroutines.launch
 
-class EditTermActivity : ComponentActivity() {
+class EditCardActivity : ComponentActivity() {
 
     companion object {
-        val CARD_ID_EXTRA = "CARD_ID"
+        const val CARD_ID_EXTRA = "CARD_ID"
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val cardId = intent.getIntExtra(CARD_ID_EXTRA, 0)
 
         setContent {
+
             AppTheme {
-                Scaffold { padding ->
+                Scaffold (
+                    topBar = {
+                        CenterAlignedTopAppBar(
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            title = {
+                                Text("Edit term")
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = {setResult(RESULT_CANCELED); finish()}) {
+                                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
+                                }
+                            })
+                    }
+                ) { padding ->
                     val kanjiValue = remember { mutableStateOf("") }
                     val kanaValue = remember { mutableStateOf("") }
                     val englishValue = remember { mutableStateOf("") }
                     val difficulty = remember { mutableStateOf(Difficulty.UNKNOWN) }
+                    val cardSetId = remember { mutableIntStateOf(0) }
                     val scope = rememberCoroutineScope()
                     val context = LocalContext.current
 
                     LaunchedEffect(key1 = Unit) {
                         val card = RansomSenseiDatabase.getInstance(context).cardDao()
                             .getCard(cardId)
-                        kanaValue.value = card.kanaValue!!
-                        kanjiValue.value = card.kanjiValue!!
-                        englishValue.value = card.englishValue!!
-                        difficulty.value = card.difficulty!!
+                        kanaValue.value = card.kanaValue
+                        kanjiValue.value = card.kanjiValue
+                        englishValue.value = card.englishValue
+                        difficulty.value = card.difficulty
+                        cardSetId.intValue = card.cardSetId
                     }
 
                     Column(
@@ -109,7 +138,8 @@ class EditTermActivity : ComponentActivity() {
                                         RansomSenseiDatabase.getInstance(context).cardDao()
                                             .insertCards(
                                                 Card(
-                                                    uid = cardId,
+                                                    cardId = cardId,
+                                                    cardSetId = cardSetId.intValue,
                                                     kanaValue = kanaValue.value,
                                                     kanjiValue = kanjiValue.value,
                                                     englishValue = englishValue.value,

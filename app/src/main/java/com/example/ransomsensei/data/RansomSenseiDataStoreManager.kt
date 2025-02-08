@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -16,6 +17,8 @@ val Context.preferenceDataStore: DataStore<Preferences> by preferencesDataStore(
 class RansomSenseiDataStoreManager(val context: Context){
 
     val HOME_ACTIVITY = stringPreferencesKey("HOME")
+    val LAST_INTERACTION = stringPreferencesKey("LAST_INTERACTION")
+    val FREQUENCY_CAP_MILLIS = stringPreferencesKey("FREQUENCY_CAP_MILLIS")
 
     suspend fun saveHomeActivity(home: String) {
         context.preferenceDataStore.edit {
@@ -29,6 +32,34 @@ class RansomSenseiDataStoreManager(val context: Context){
             preferences ->
             preferences[HOME_ACTIVITY] ?: ""
         }.first()
+    }
+
+    suspend fun setLastInteraction(timestamp: Long) {
+        context.preferenceDataStore.edit {
+                settings ->
+            settings[LAST_INTERACTION] = timestamp.toString()
+        }
+    }
+
+    suspend fun getLastInteraction() : Long {
+        return context.preferenceDataStore.data.map {
+                preferences ->
+            (preferences[LAST_INTERACTION] ?: "0").toLong()
+        }.first()
+    }
+
+    suspend fun setFrequencyCapMillis(millis: Long) {
+        context.preferenceDataStore.edit {
+                settings ->
+            settings[FREQUENCY_CAP_MILLIS] = millis.toString()
+        }
+    }
+
+    fun getFrequencyCapMillis() : Flow<Long> {
+        return context.preferenceDataStore.data.map {
+                preferences ->
+            (preferences[FREQUENCY_CAP_MILLIS] ?: "0").toLong()
+        }
     }
 
     suspend fun clearData() {

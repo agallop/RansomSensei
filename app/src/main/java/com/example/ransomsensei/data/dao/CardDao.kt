@@ -10,23 +10,31 @@ import com.example.ransomsensei.data.entity.Card
 
 @Dao
 interface CardDao {
-    @Query("SELECT * FROM Cards")
+    @Query("SELECT * FROM Card")
     suspend fun getAll(): List<Card>
 
-    @Query("SELECT * FROM Cards WHERE difficulty = 'EASY'")
+    @Query("SELECT * FROM Card " +
+            "INNER JOIN CardSet Using (card_set_id)" +
+            "WHERE card_set_status = 'ENABLED'")
+    suspend fun getAllActive(): List<Card>
+
+    @Query("SELECT * FROM Card WHERE difficulty = 'EASY'")
     suspend fun loadAllEasy(): List<Card>
 
-    @Query("SELECT * FROM Cards WHERE difficulty = 'MEDIUM'")
+    @Query("SELECT * FROM Card WHERE difficulty = 'MEDIUM'")
     suspend fun loadAllMedium(): List<Card>
 
-    @Query("SELECT * FROM Cards WHERE difficulty = 'HARD'")
+    @Query("SELECT * FROM Card WHERE difficulty = 'HARD'")
     suspend fun loadAllHard(): List<Card>
+
+    @Query("SELECT * FROM Card WHERE card_set_id = :cardSetId")
+    suspend fun getCardsInSet(cardSetId: Int): List<Card>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCards(vararg cards: Card)
 
-    @Query("Select * FROM Cards WHERE uid = :uid")
-    suspend fun getCard(uid: Int): Card
+    @Query("Select * FROM Card WHERE card_id = :cardId")
+    suspend fun getCard(cardId: Int): Card
 
     @Update()
     suspend fun updateCard(card: Card)
