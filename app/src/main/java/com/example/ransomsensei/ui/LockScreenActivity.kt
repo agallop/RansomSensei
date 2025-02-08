@@ -49,6 +49,7 @@ class LockScreenActivity : ComponentActivity() {
 
         setContent {
             val viewModel = koinViewModel<LockScreenViewModel>()
+            WindowCompat.setDecorFitsSystemWindows(window, false)
             LockScreen(viewModel)
         }
     }
@@ -88,8 +89,6 @@ class LockScreenActivity : ComponentActivity() {
         updateLastInteraction: () -> Unit,
         loadQuestion: () -> Unit
     ) {
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         Scaffold { padding ->
             LaunchedEffect(key1 = Unit) {
                 loadQuestion()
