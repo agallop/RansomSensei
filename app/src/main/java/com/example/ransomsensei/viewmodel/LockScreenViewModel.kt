@@ -4,21 +4,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.ransomsensei.data.RansomSenseiDataRepository
 import com.example.ransomsensei.data.entity.Card
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class LockScreenViewModel(
     private val repository: RansomSenseiDataRepository
-)
-    : ViewModel() {
+) : ViewModel() {
     var isLoading by mutableStateOf(true)
         private set
     var card by mutableStateOf<Card?>(null)
@@ -28,8 +28,6 @@ class LockScreenViewModel(
     var homeActivityPackage by mutableStateOf("")
         private set
     var lastInteraction by mutableStateOf(0L)
-        private set
-    var frequencyCapMillis by mutableStateOf(600000L)
         private set
     var showQuestion by mutableStateOf(false)
         private set
@@ -46,15 +44,18 @@ class LockScreenViewModel(
         private set
 
     fun loadQuestion() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val cards = repository.getAllActiveCards()
-            if (cards.isNotEmpty()) {
-                card = cards[Random.nextInt(cards.size)]
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val cards = repository.getAllActiveCards()
+
+                if (cards.isNotEmpty()) {
+                    card = cards[Random.nextInt(cards.size)]
+                }
+                homeActivityPackage = repository.getHomePackage()
+                lastInteraction = repository.getLastInteraction()
             }
-            homeActivityPackage = repository.getHomePackage()
-            lastInteraction = repository.getLastInteraction()
+
             showQuestion = card != null
-               // && lastInteraction + frequencyCapMillis < System.currentTimeMillis()
             delay(500)
             isLoading = false
         }
@@ -64,7 +65,11 @@ class LockScreenViewModel(
         currentAnswer = answer
     }
 
-    suspend fun updateLastInteraction() {
-        repository.setLastInteraction(System.currentTimeMillis())
+    fun updateLastInteraction() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                repository.setLastInteraction(System.currentTimeMillis())
+            }
+        }
     }
 }

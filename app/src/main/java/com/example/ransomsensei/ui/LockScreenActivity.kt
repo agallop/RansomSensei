@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,12 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.viewmodel.LockScreenViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import kotlin.text.isNotEmpty
 
@@ -88,7 +85,7 @@ class LockScreenActivity : ComponentActivity() {
         allowSkip: Boolean,
         onCurrentAnswerChange: (String) -> Unit,
         homeActivityPackage: String,
-        updateLastInteraction: suspend () -> Unit,
+        updateLastInteraction: () -> Unit,
         loadQuestion: () -> Unit
     ) {
 
@@ -116,56 +113,64 @@ class LockScreenActivity : ComponentActivity() {
 
                 Row {
                     Text(
-                        text = "Translate to gain entry", style = MaterialTheme.typography.titleLarge
+                        text = "Translate to gain entry",
+                        style = MaterialTheme.typography.titleLarge
                     )
                 }
-                AnimatedVisibility(visible = !isLoading) {
+                AnimatedVisibility(
+                    modifier = Modifier.testTag("AnimatedVisibility"),
+                    visible = !isLoading
+                ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
                         if (showQuestion) {
-                            BasicQuestion(
-                                kanaValue = kanaValue,
-                                kanjiValue = kanjiValue,
-                                englishValue = englishValue,
-                                allowSkip = allowSkip,
-                                currentAnswer = currentAnswer,
-                                currentCountDown = currentCountDown,
-                                onCurrentAnswerChange = onCurrentAnswerChange,
+                            Card(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .width(250.dp)
+                                    .height(80.dp)
                             ) {
-                                val intent = Intent(Intent.ACTION_MAIN)
-                                intent.addCategory(Intent.CATEGORY_HOME)
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    updateLastInteraction()
-                                    withContext(Dispatchers.Main) {
-                                        if (homeActivityPackage.isNotEmpty()) {
-                                            intent.setPackage(homeActivityPackage)
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            startActivity(intent)
-                                            finish()
-                                        } else {
-                                            val chooser =
-                                                Intent.createChooser(intent, /* title */ null)
-                                            startActivity(chooser)
-                                            finish()
-                                        }
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Row {
+                                        Text(kanjiValue)
                                     }
+                                    Row {
+                                        Text(kanaValue)
+                                    }
+                                }
+                            }
+
+                            TextField(
+                                modifier = Modifier.testTag("AnswerTextField"),
+                                value = currentAnswer, onValueChange = onCurrentAnswerChange
+                            )
+
+                            Button(onClick = {
+                                if (currentAnswer.toLowerCase(Locale.current) ==
+                                    (englishValue.toLowerCase(Locale.current))
+                                ) {
+                                    onCorrectAnswer(homeActivityPackage, updateLastInteraction)
+                                }
+                            }) { Text("Check my answer") }
+                            Surface(
+                                onClick = { onSkip(homeActivityPackage) },
+                                enabled = allowSkip
+                            ) {
+                                if (allowSkip) {
+                                    Text("Skip for now")
+                                } else {
+                                    Text(text = currentCountDown.collectAsState("").value)
                                 }
                             }
                         } else {
                             Button(content = { Text("Proceed") }, onClick = {
-                                val intent = Intent(Intent.ACTION_MAIN)
-                                intent.addCategory(Intent.CATEGORY_HOME)
-                                if (homeActivityPackage.isNotEmpty()) {
-                                    intent.setPackage(homeActivityPackage)
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    startActivity(intent)
-                                } else {
-                                    val chooser = Intent.createChooser(intent, /* title */ null)
-                                    startActivity(chooser)
-                                }
-                                finish()
+                                onSkip(homeActivityPackage)
                             })
                         }
                     }
@@ -174,54 +179,27 @@ class LockScreenActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun BasicQuestion(
-        kanaValue: String,
-        kanjiValue: String,
-        englishValue: String,
-        currentAnswer: String,
-        allowSkip: Boolean,
-        currentCountDown: Flow<String>,
-        onCurrentAnswerChange: (String) -> Unit,
-        onCompletion: () -> Unit
-    ) {
+    fun onCorrectAnswer(homeActivityPackage: String, updateLastInteraction: () -> Unit) {
+        updateLastInteraction()
+        continueToHomeApp(homeActivityPackage)
+    }
 
-        Card(
-            modifier = Modifier
-                .padding(16.dp)
-                .width(250.dp)
-                .height(80.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Row {
-                    Text(kanjiValue)
-                }
-                Row {
-                    Text(kanaValue)
-                }
-            }
+    fun onSkip(homeActivityPackage: String) {
+        continueToHomeApp(homeActivityPackage)
+    }
+
+    fun continueToHomeApp(homeActivityPackage: String) {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        if (homeActivityPackage.isNotEmpty()) {
+            intent.setPackage(homeActivityPackage)
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        } else {
+            val chooser = Intent.createChooser(intent, /* title */ null)
+            startActivity(chooser)
         }
-
-        TextField(
-            value = currentAnswer, onValueChange = onCurrentAnswerChange
-        )
-
-        Button(onClick = {
-            if (currentAnswer.toLowerCase(Locale.current) == (englishValue.toLowerCase(Locale.current))) {
-                onCompletion()
-            }
-        }) { Text("Check my answer") }
-        Surface(onClick = onCompletion, enabled = allowSkip) {
-            if (allowSkip) {
-                Text("Skip for now")
-            } else {
-                Text(text = currentCountDown.collectAsState("").value)
-            }
-        }
+        finish()
     }
 
     @Preview
