@@ -20,6 +20,7 @@ roomRuntime = "2.6.1"
 googleFonts = "1.7.6"
 koinAndroid = "4.1.0-Beta5"
 koinAndroidxCompose = "4.1.0-Beta5"
+runner = "1.6.2"
 
 [libraries]
 
@@ -57,6 +58,9 @@ androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.
 accompanist-drawablepainter = {group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist"}
 insert-koin-koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koinAndroid" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinAndroidxCompose" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koinAndroid" }
+koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koinAndroid" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

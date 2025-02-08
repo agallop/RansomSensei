@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.ransomsensei.koin.testing.InstrumentationTestRunner"
     }
 
     buildTypes {
@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.androidx.junit.ktx)
     implementation(libs.insert.koin.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.runner)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
