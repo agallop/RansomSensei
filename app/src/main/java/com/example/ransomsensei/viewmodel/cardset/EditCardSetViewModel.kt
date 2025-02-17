@@ -9,21 +9,24 @@ import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 
 class EditCardSetViewModel(val database: RansomSenseiDatabase) : ViewModel() {
-    var cardSetId by mutableStateOf(0)
-        private set
     var name by mutableStateOf("")
         private set
     var status by mutableStateOf(CardSetStatus.UNKNOWN)
+    private lateinit var _existingCardSet: CardSet;
 
     suspend fun loadCardSet(cardSetId: Int) {
-        this.cardSetId = cardSetId
-        val existingCardSet = database.cardSetDao().getCardSet(cardSetId)
-         name = existingCardSet.cardSetName
-        status = existingCardSet.cardSetStatus
+        _existingCardSet = database.cardSetDao().getCardSet(cardSetId)
+        name = _existingCardSet.cardSetName
+        status = _existingCardSet.cardSetStatus
     }
 
     suspend fun updateCardSet() {
-        database.cardSetDao().updateCardSet(CardSet(cardSetId, name, status))
+        database.cardSetDao().updateCardSet(
+            _existingCardSet.copy(
+                cardSetName = name,
+                cardSetStatus = status
+            )
+        )
     }
 
     fun onNameChange(name: String) {

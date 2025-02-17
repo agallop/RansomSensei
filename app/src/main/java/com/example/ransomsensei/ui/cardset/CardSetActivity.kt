@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -35,11 +36,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.example.ransomsensei.data.entity.Card
+import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.card.AddCardActivity
 import com.example.ransomsensei.ui.card.EditCardActivity
@@ -57,13 +60,13 @@ class CardSetActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val cardSetId = intent.getIntExtra(CARD_SET_ID_EXTRA, 0)
 
-    setContent {
+
+        setContent {
         val viewModel = koinViewModel<CardSetViewModel>()
+        viewModel.loadCards(cardSetId)
+            val cards = viewModel.cards.collectAsState().value
 
         AppTheme {
-            LaunchedEffect(key1 = Unit) {
-                viewModel.loadCards(cardSetId)
-            }
 
             Scaffold(
                 topBar = {
@@ -73,7 +76,7 @@ class CardSetActivity : ComponentActivity() {
                             titleContentColor = MaterialTheme.colorScheme.primary,
                         ),
                         title = {
-                            Text(viewModel.cardSet.cardSetName)
+                            Text(viewModel.cardSet.collectAsState(CardSet.getDefaultInstance()).value.cardSetName)
                         },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -86,7 +89,7 @@ class CardSetActivity : ComponentActivity() {
                         actions =
                         {
                             if (viewModel.selectedCards.isEmpty())
-                                NoSelectedItemsNavigationBarActions(viewModel)
+                                NoSelectedItemsNavigationBarActions(cardSetId)
                             else
                                 SelectedItemsNavigationBarActions(viewModel)
                         }
@@ -98,9 +101,9 @@ class CardSetActivity : ComponentActivity() {
                         .padding(padding),
                     verticalArrangement = Arrangement.Top
                 ) {
-                    items(viewModel.cards) {
+                    itemsIndexed(cards) {index, card ->
                         CardItem(
-                            card = it,
+                            card = card,
                             viewModel
                         )
                     }
@@ -115,16 +118,7 @@ class CardSetActivity : ComponentActivity() {
         card: Card,
         viewModel: CardSetViewModel
     ) {
-        val activity = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                viewModel.reloadCards()
-            }
-        }
         val haptics = LocalHapticFeedback.current
-        val editTermActivityIntent = Intent(this, EditCardActivity::class.java)
-        editTermActivityIntent.putExtra(EditCardActivity.CARD_ID_EXTRA, card.cardId)
 
         Card(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -133,7 +127,7 @@ class CardSetActivity : ComponentActivity() {
                 .padding(4.dp)
                 .combinedClickable(
                     onClick = {
-                        activity.launch(editTermActivityIntent)
+                        startEditCardActivity(card.cardId)
                     },
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -171,26 +165,13 @@ class CardSetActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NoSelectedItemsNavigationBarActions(viewModel: CardSetViewModel) {
-        val addTermActivityIntent = Intent(this, AddCardActivity::class.java)
-        addTermActivityIntent.putExtra(AddCardActivity.CARD_SET_ID_EXTRA, viewModel.cardSetId)
-        val editCardSetActivityIntent = Intent(this, EditCardSetActivity::class.java)
-        editCardSetActivityIntent.putExtra(EditCardSetActivity.CARD_SET_ID_EXTRA, viewModel.cardSetId)
-        val activity = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                viewModel.cardSetChanged()
-            }
-        }
-
-
+    fun NoSelectedItemsNavigationBarActions(cardSetId: Int) {
         IconButton(onClick = {
-            activity.launch(editCardSetActivityIntent)
+            startEditCardSetActivity(cardSetId)
         }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
 
         IconButton(onClick = {
-            activity.launch(addTermActivityIntent)
+            startAddCardActivity(cardSetId)
         }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
     }
 
@@ -250,5 +231,23 @@ class CardSetActivity : ComponentActivity() {
                 }
             }
         )
+    }
+
+    private fun startAddCardActivity(cardSetId: Int) {
+        val addCardActivityIntent = Intent(this, AddCardActivity::class.java)
+        addCardActivityIntent.putExtra(AddCardActivity.CARD_SET_ID_EXTRA, cardSetId)
+        startActivity(addCardActivityIntent)
+    }
+
+    private fun startEditCardSetActivity(cardSetId: Int) {
+        val editCardSetActivityIntent = Intent(this, EditCardSetActivity::class.java)
+        editCardSetActivityIntent.putExtra(EditCardSetActivity.CARD_SET_ID_EXTRA, cardSetId)
+        startActivity(editCardSetActivityIntent)
+    }
+
+    private fun startEditCardActivity(cardId: Int) {
+        val intent = Intent(this, EditCardActivity::class.java)
+        intent.putExtra(EditCardActivity.CARD_ID_EXTRA, cardId)
+        startActivity(intent)
     }
 }
