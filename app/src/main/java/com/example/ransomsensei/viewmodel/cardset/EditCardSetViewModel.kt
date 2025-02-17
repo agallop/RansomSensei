@@ -12,7 +12,7 @@ class EditCardSetViewModel(val database: RansomSenseiDatabase) : ViewModel() {
     var name by mutableStateOf("")
         private set
     var status by mutableStateOf(CardSetStatus.UNKNOWN)
-    private lateinit var _existingCardSet: CardSet;
+    private lateinit var _existingCardSet: CardSet
 
     suspend fun loadCardSet(cardSetId: Int) {
         _existingCardSet = database.cardSetDao().getCardSet(cardSetId)

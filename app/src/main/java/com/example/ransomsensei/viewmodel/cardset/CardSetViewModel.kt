@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

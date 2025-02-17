@@ -49,10 +49,6 @@ private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
         }
     }
 
-    fun isCardSetSelected(cardSet: CardSet): Boolean {
-        return selectedCardSets.contains(cardSet)
-    }
-
     fun showDeleteConfirmation() {
         showDeleteConfirmation = true
     }
@@ -70,6 +66,6 @@ private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
     }
 
     fun showHomeActivityWelcome() {
-        needToSetHomeActivity = false;
+        needToSetHomeActivity = false
     }
 }
