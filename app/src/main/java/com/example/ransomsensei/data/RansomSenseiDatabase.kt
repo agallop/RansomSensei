@@ -35,14 +35,16 @@ abstract class RansomSenseiDatabase : RoomDatabase() {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         RansomSenseiDatabase::class.java,
-                        DATABASE_NAME)
+                        DATABASE_NAME
+                    )
                         .fallbackToDestructiveMigration()
                         .addCallback(object : Callback() {
-                            override fun onCreate(db: SupportSQLiteDatabase) {
-                                super.onCreate(db)
+
+                            override fun onOpen(db: SupportSQLiteDatabase) {
+                                super.onOpen(db)
                                 db.execSQL(
                                     """
-                                        CREATE TRIGGER IF NOT EXISTS update_card_set_count AFTER INSERT ON Card
+                                        CREATE TEMP TRIGGER IF NOT EXISTS increase_card_set_count AFTER INSERT ON Card
                                         BEGIN
                                             UPDATE CardSet
                                             SET card_count = (
@@ -53,23 +55,20 @@ abstract class RansomSenseiDatabase : RoomDatabase() {
                                         END;
                                     """.trimIndent()
                                 )
-                            }
-
-                            override fun onOpen(db: SupportSQLiteDatabase) {
-                                super.onOpen(db)
 
                                 db.execSQL(
                                     """
-                                        CREATE TRIGGER IF NOT EXISTS update_card_set_count AFTER INSERT ON Card
+                                        CREATE TEMP TRIGGER IF NOT EXISTS decrease_card_set_count AFTER DELETE ON Card
                                         BEGIN
                                             UPDATE CardSet
                                             SET card_count = (
                                                 SELECT COUNT(*)
                                                 FROM Card
-                                                WHERE card_set_id = NEW.card_set_id)
-                                                WHERE card_set_id = NEW.card_set_id;
+                                                WHERE card_set_id = OLD.card_set_id)
+                                                WHERE card_set_id = OLD.card_set_id;
                                         END;
-                                    """.trimIndent())
+                                    """.trimIndent()
+                                )
                             }
                         })
                         .build()
