@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -54,14 +55,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val viewModel = koinViewModel<MainScreenViewModel>()
+            viewModel.loadCardSets()
 
             AppTheme {
                 val welcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
-
-                LaunchedEffect(key1 = Unit) {
-                    viewModel.loadCardSets()
-                }
-
+                val cardSets = viewModel.cardSets.collectAsState().value
                 Scaffold(
                     topBar = {
                         CenterAlignedTopAppBar(
@@ -75,9 +73,8 @@ class MainActivity : ComponentActivity() {
                             actions =
                             {
                                 if (viewModel.selectedCardSets.isEmpty()) {
-                                    NoSelectedItemsNavigationBarActions(viewModel)
-                                }
-                                else SelectedItemsNavigationBarActions(
+                                    NoSelectedItemsNavigationBarActions()
+                                } else SelectedItemsNavigationBarActions(
                                     viewModel
                                 )
                             }
@@ -89,7 +86,8 @@ class MainActivity : ComponentActivity() {
                             .padding(padding),
                         verticalArrangement = Arrangement.Top
                     ) {
-                        items(viewModel.cardSets) {
+
+                        items(cardSets) {
                             CardSetCard(
                                 cardSet = it,
                                 viewModel
@@ -113,13 +111,6 @@ class MainActivity : ComponentActivity() {
         viewModel: MainScreenViewModel,
     ) {
         val haptics = LocalHapticFeedback.current
-        val activity = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                viewModel.reloadCardSets()
-            }
-        }
 
         Card(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -128,9 +119,7 @@ class MainActivity : ComponentActivity() {
                 .padding(4.dp)
                 .combinedClickable(
                     onClick = {
-                        val cardSetIntent = Intent(this, CardSetActivity::class.java)
-                        cardSetIntent.putExtra(CardSetActivity.CARD_SET_ID_EXTRA, cardSet.cardSetId)
-                        activity.launch(cardSetIntent)
+                        startCardSetActivity(cardSet.cardSetId)
                     },
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -177,18 +166,9 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NoSelectedItemsNavigationBarActions(viewModel: MainScreenViewModel) {
-        val addCardSetIntent = Intent(this, AddCardSetActivity::class.java)
-        val activity = rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                viewModel.reloadCardSets()
-            }
-        }
-
+    fun NoSelectedItemsNavigationBarActions() {
         IconButton(onClick = {
-            activity.launch(addCardSetIntent)
+            startAddCardSetActivity()
         }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
     }
 
@@ -250,5 +230,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         )
+    }
+
+    private fun startAddCardSetActivity() {
+        val intent = Intent(this, AddCardSetActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startCardSetActivity(cardSetId: Int) {
+        val intent = Intent(this, CardSetActivity::class.java)
+        intent.putExtra(CardSetActivity.CARD_SET_ID_EXTRA, cardSetId)
+        startActivity(intent)
     }
 }
