@@ -3,9 +3,7 @@ package com.example.ransomsensei.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -16,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -38,6 +35,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
@@ -49,56 +47,80 @@ import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             val viewModel = koinViewModel<MainScreenViewModel>()
             viewModel.loadCardSets()
+            MainScreen(viewModel)
+        }
+    }
 
-            AppTheme {
-                val welcomeActivityIntent = Intent(this, WelcomeActivity::class.java)
-                val cardSets = viewModel.cardSets.collectAsState().value
-                Scaffold(
-                    topBar = {
-                        CenterAlignedTopAppBar(
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.primary,
-                            ),
-                            title = {
-                                Text("Ransom Sensei")
-                            },
-                            actions =
-                            {
-                                if (viewModel.selectedCardSets.isEmpty()) {
-                                    NoSelectedItemsNavigationBarActions()
-                                } else SelectedItemsNavigationBarActions(
-                                    viewModel
-                                )
-                            }
+    @Composable
+    fun MainScreen(viewModel: MainScreenViewModel) {
+        AppTheme {
+            MainScreen(
+                showDeleteConfirmation = viewModel::showDeleteConfirmation,
+                hideDeleteConfirmation = viewModel::hideDeleteConfirmation,
+                deleteSelectedCardSets = viewModel::deleteSelectedCardSets,
+                deleteConfirmationShown = viewModel.showDeleteConfirmation,
+                cardSets = viewModel.cardSets.collectAsState().value,
+                selectedCardSets = viewModel.selectedCardSets,
+                onCardSetLongClick = viewModel::toggleCardSetSelection
+            )
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MainScreen(
+        showDeleteConfirmation: () -> Unit,
+        hideDeleteConfirmation: () -> Unit,
+        deleteSelectedCardSets: () -> Unit,
+        deleteConfirmationShown: Boolean,
+        cardSets: List<CardSet>,
+        selectedCardSets: Set<CardSet>,
+        onCardSetLongClick: (CardSet) -> Unit
+    ) {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    title = {
+                        Text("Ransom Sensei")
+                    },
+                    actions =
+                    {
+                        if (selectedCardSets.isEmpty()) {
+                            NoSelectedItemsNavigationBarActions()
+                        } else SelectedItemsNavigationBarActions(
+                            showDeleteConfirmation = showDeleteConfirmation,
+                            hideDeleteConfirmation = hideDeleteConfirmation,
+                            deleteSelectedCardSets = deleteSelectedCardSets,
+                            deleteConfirmationShown = deleteConfirmationShown,
+                            selectedCardSets.size
                         )
-                    }) { padding ->
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        verticalArrangement = Arrangement.Top
-                    ) {
-
-                        items(cardSets) {
-                            CardSetCard(
-                                cardSet = it,
-                                viewModel
-                            )
-                        }
                     }
+                )
+            }) { padding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                verticalArrangement = Arrangement.Top
+            ) {
 
-                    if (viewModel.needToSetHomeActivity) {
-                        viewModel.showHomeActivityWelcome()
-                        startActivity(welcomeActivityIntent)
-                    }
+                items(cardSets) {
+                    CardSetCard(
+                        cardSet = it,
+                        isSelected = selectedCardSets.contains(it),
+                        onCardSetLongClick = onCardSetLongClick,
+                    )
                 }
             }
         }
@@ -108,7 +130,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun CardSetCard(
         cardSet: CardSet,
-        viewModel: MainScreenViewModel,
+        isSelected: Boolean,
+        onCardSetLongClick: (CardSet) -> Unit,
     ) {
         val haptics = LocalHapticFeedback.current
 
@@ -123,11 +146,11 @@ class MainActivity : ComponentActivity() {
                     },
                     onLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        viewModel.toggleCardSetSelection(cardSet)
+                        onCardSetLongClick(cardSet)
                     })
         ) {
             ListItem(
-                colors = if (!viewModel.isCardSetSelected(cardSet))
+                colors = if (!isSelected)
                     ListItemDefaults.colors()
                 else
                     ListItemDefaults.colors(
@@ -174,19 +197,24 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun SelectedItemsNavigationBarActions(
-        viewModel: MainScreenViewModel
+        showDeleteConfirmation: () -> Unit,
+        hideDeleteConfirmation: () -> Unit,
+        deleteSelectedCardSets: () -> Unit,
+        deleteConfirmationShown: Boolean,
+        cardCount: Int
     ) {
-        IconButton(onClick = {
-            viewModel.showDeleteConfirmation()
-        }) { Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete button") }
+        IconButton(onClick = showDeleteConfirmation) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "Delete button"
+            )
+        }
         when {
-            viewModel.showDeleteConfirmation ->
+            deleteConfirmationShown ->
                 DeleteCardsAlertDialog(
-                    cardCount = viewModel.selectedCardSets.size,
-                    onConfirmation = {
-                        viewModel.deleteSelectedCardSets()
-                    },
-                    onDismiss = { viewModel.hideDeleteConfirmation() }
+                    cardCount = cardCount,
+                    onConfirmation = deleteSelectedCardSets,
+                    onDismiss = hideDeleteConfirmation
                 )
         }
     }
@@ -241,5 +269,40 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, CardSetActivity::class.java)
         intent.putExtra(CardSetActivity.CARD_SET_ID_EXTRA, cardSetId)
         startActivity(intent)
+    }
+
+    @Preview
+    @Composable
+    fun MainScreenPreview_lightTheme() {
+        MainScreenPreview(darkTheme = false)
+    }
+
+    @Preview
+    @Composable
+    fun MainScreenPreview_DarkTheme() {
+        MainScreenPreview(darkTheme = true)
+    }
+
+    @Composable
+    fun MainScreenPreview(darkTheme: Boolean) {
+        AppTheme(darkTheme) {
+            MainScreen(
+                showDeleteConfirmation = {},
+                hideDeleteConfirmation = {},
+                deleteSelectedCardSets = {},
+                deleteConfirmationShown = false,
+                cardSets = listOf(
+                    CardSet(cardSetName = "Days of the Week",
+                        cardCount = 7,
+                        cardSetStatus = CardSetStatus.ENABLED
+                    ),
+                    CardSet(cardSetName = "Greetings",
+                        cardCount = 5,
+                        cardSetStatus = CardSetStatus.DISABLED
+                    ),
+                ),
+                selectedCardSets = setOf(),
+                onCardSetLongClick = {})
+        }
     }
 }
