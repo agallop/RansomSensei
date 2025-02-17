@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.ransomsensei.data.entity.Card
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CardDao {
@@ -29,6 +30,9 @@ interface CardDao {
 
     @Query("SELECT * FROM Card WHERE card_set_id = :cardSetId")
     suspend fun getCardsInSet(cardSetId: Int): List<Card>
+
+    @Query("SELECT * FROM Card WHERE card_set_id = :cardSetId")
+    fun getCardsInSetFlow(cardSetId: Int): Flow<List<Card>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCards(vararg cards: Card)
