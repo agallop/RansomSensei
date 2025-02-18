@@ -1,4 +1,4 @@
-package com.example.ransomsensei.viewmodel
+package com.example.ransomsensei.viewmodel.activity_main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainScreenViewModel(private val database: RansomSenseiDatabase,
-private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
+class CardSetsScreenViewModel(private val database: RansomSenseiDatabase,
+                              private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
     private val _cardSets = MutableStateFlow(emptyList<CardSet>())
     val cardSets = _cardSets.asStateFlow()
     var isLoading by mutableStateOf(true)
@@ -39,7 +39,7 @@ private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
 
         viewModelScope.launch {
             needToSetHomeActivity = dataStoreManager.getHomeActivity().isEmpty()
-            isLoading = false;
+            isLoading = false
         }
     }
 
@@ -63,9 +63,5 @@ private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
             selectedCardSets = setOf()
             showDeleteConfirmation = false
         }
-    }
-
-    fun showHomeActivityWelcome() {
-        needToSetHomeActivity = false
     }
 }

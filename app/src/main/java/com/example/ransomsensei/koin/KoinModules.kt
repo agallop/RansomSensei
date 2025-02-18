@@ -5,7 +5,7 @@ import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.RansomSenseiDataRepository
 import com.example.ransomsensei.viewmodel.LockScreenViewModel
-import com.example.ransomsensei.viewmodel.MainScreenViewModel
+import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
 import com.example.ransomsensei.viewmodel.SettingsViewModel
 import com.example.ransomsensei.viewmodel.card.AddCardViewModel
 import com.example.ransomsensei.viewmodel.cardset.AddCardSetViewModel
@@ -22,7 +22,7 @@ val appModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { MainScreenViewModel(get(), get()) }
+    viewModel { CardSetsScreenViewModel(get(), get()) }
     viewModel { CardSetViewModel(get()) }
     viewModel { LockScreenViewModel(get()) }
     viewModel { AddCardSetViewModel(get()) }

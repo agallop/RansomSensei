@@ -23,6 +23,8 @@ koinAndroidxCompose = "4.1.0-Beta5"
 runner = "1.6.2"
 turbine = "1.2.0"
 truth = "1.4.4"
+navigationCompose = "2.9.0-alpha06"
+kotlinxSerializationJson = "1.8.0"
 
 [libraries]
 
@@ -65,9 +67,12 @@ koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", versio
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
