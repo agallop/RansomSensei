@@ -49,16 +49,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.card.AddCardActivity"
-            android:exported="true"
-            android:theme="@style/Theme.RansomSensei.NoActionBar" >
-        </activity>
-        <activity
-            android:name=".ui.card.EditCardActivity"
-            android:exported="true"
-            android:theme="@style/Theme.RansomSensei.NoActionBar" >
-        </activity>
     </application>
 
 </manifest>

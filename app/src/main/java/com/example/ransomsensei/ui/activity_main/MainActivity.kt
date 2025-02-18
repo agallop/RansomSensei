@@ -12,10 +12,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.WelcomeActivity
+import com.example.ransomsensei.ui.activity_main.components.AddEditCardScreen
 import com.example.ransomsensei.ui.activity_main.components.AddEditCardSetScreen
 import com.example.ransomsensei.ui.activity_main.components.CardSetDetailsScreen
 import com.example.ransomsensei.ui.activity_main.components.CardSetsScreen
 import com.example.ransomsensei.ui.activity_main.util.Destination
+import com.example.ransomsensei.viewmodel.activity_main.AddEditCardScreenViewModel
 import com.example.ransomsensei.viewmodel.activity_main.AddEditCardSetScreenViewModel
 import com.example.ransomsensei.viewmodel.activity_main.CardSetDetailsScreenViewModel
 import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
@@ -57,6 +59,16 @@ class MainActivity : ComponentActivity() {
                         cardSetDetailsScreenViewModel.loadCards(args.cardSetId)
                         CardSetDetailsScreen(navController, cardSetDetailsScreenViewModel)
                     }
+                    composable<Destination.AddEditCardScreen> {
+                        val args = it.toRoute<Destination.AddEditCardScreen>()
+                        val addEditCardScreenViewModel = koinViewModel<AddEditCardScreenViewModel>()
+                        addEditCardScreenViewModel.updateCardSetId(args.cardSetId)
+                        when {args.cardId != null ->
+                            addEditCardScreenViewModel.loadCard(args.cardId)
+                        }
+                        AddEditCardScreen(navController, addEditCardScreenViewModel)
+                    }
+
                 }
             }
         }

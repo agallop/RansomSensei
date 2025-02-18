@@ -8,7 +8,7 @@ import com.example.ransomsensei.viewmodel.LockScreenViewModel
 import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
 import com.example.ransomsensei.viewmodel.SettingsViewModel
 import com.example.ransomsensei.viewmodel.activity_main.AddEditCardSetScreenViewModel
-import com.example.ransomsensei.viewmodel.card.AddCardViewModel
+import com.example.ransomsensei.viewmodel.activity_main.AddEditCardScreenViewModel
 import com.example.ransomsensei.viewmodel.activity_main.CardSetDetailsScreenViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -25,6 +25,6 @@ val viewModelModule = module {
     viewModel { CardSetDetailsScreenViewModel(get()) }
     viewModel { LockScreenViewModel(get()) }
     viewModel { AddEditCardSetScreenViewModel(get()) }
-    viewModel { AddCardViewModel(get()) }
+    viewModel { AddEditCardScreenViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
 }

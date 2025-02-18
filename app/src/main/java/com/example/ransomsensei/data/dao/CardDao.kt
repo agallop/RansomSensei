@@ -38,7 +38,7 @@ interface CardDao {
     suspend fun insertCards(vararg cards: Card)
 
     @Query("Select * FROM Card WHERE card_id = :cardId")
-    suspend fun getCard(cardId: Int): Card
+    suspend fun getCard(cardId: Int): Card?
 
     @Update()
     suspend fun updateCard(card: Card)

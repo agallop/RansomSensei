@@ -34,11 +34,15 @@ import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.theme.AppTheme
+import com.example.ransomsensei.ui.activity_main.util.Destination
 import com.example.ransomsensei.viewmodel.activity_main.CardSetDetailsScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardSetDetailsScreen(navHostController: NavHostController, viewModel: CardSetDetailsScreenViewModel) {
+fun CardSetDetailsScreen(
+    navHostController: NavHostController,
+    viewModel: CardSetDetailsScreenViewModel
+) {
     AppTheme {
         val cards = viewModel.cards.collectAsState().value
 
@@ -53,15 +57,23 @@ fun CardSetDetailsScreen(navHostController: NavHostController, viewModel: CardSe
                         Text(viewModel.cardSet.collectAsState(CardSet.getDefaultInstance()).value.cardSetName)
                     },
                     navigationIcon = {
-                        IconButton(onClick =
-                            navHostController::popBackStack) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
+                        IconButton(
+                            onClick =
+                            navHostController::popBackStack
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back button"
+                            )
                         }
                     },
                     actions =
                     {
                         if (viewModel.selectedCards.isEmpty())
-                            NoSelectedItemsNavigationBarActions(viewModel.cardSetId)
+                            NoSelectedItemsNavigationBarActions(
+                                viewModel.cardSetId,
+                                navHostController
+                            )
                         else
                             SelectedItemsNavigationBarActions(viewModel)
                     }
@@ -73,10 +85,11 @@ fun CardSetDetailsScreen(navHostController: NavHostController, viewModel: CardSe
                     .padding(padding),
                 verticalArrangement = Arrangement.Top
             ) {
-                itemsIndexed(cards) {index, card ->
+                itemsIndexed(cards) { index, card ->
                     CardItem(
                         card = card,
-                        viewModel
+                        viewModel,
+                        navHostController
                     )
                 }
             }
@@ -88,7 +101,8 @@ fun CardSetDetailsScreen(navHostController: NavHostController, viewModel: CardSe
 @Composable
 fun CardItem(
     card: Card,
-    viewModel: CardSetDetailsScreenViewModel
+    viewModel: CardSetDetailsScreenViewModel,
+    navHostController: NavHostController
 
 ) {
     val haptics = LocalHapticFeedback.current
@@ -100,7 +114,12 @@ fun CardItem(
             .padding(4.dp)
             .combinedClickable(
                 onClick = {
-                  //  startEditCardActivity(card.cardId)
+                    navHostController.navigate(
+                        Destination.AddEditCardScreen(
+                            cardSetId = card.cardSetId,
+                            cardId = card.cardId
+                        )
+                    )
                 },
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -138,13 +157,14 @@ fun CardItem(
 }
 
 @Composable
-fun NoSelectedItemsNavigationBarActions(cardSetId: Int) {
+fun NoSelectedItemsNavigationBarActions(cardSetId: Int, navHostController: NavHostController) {
     IconButton(onClick = {
-        // startEditCardSetActivity(cardSetId)
+        navHostController.navigate(Destination.AddEditCardSetScreen(cardSetId = cardSetId))
     }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
 
     IconButton(onClick = {
-      //  startAddCardActivity(cardSetId)
+        navHostController.navigate(Destination.AddEditCardScreen(cardSetId = cardSetId))
+
     }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
 }
 
