@@ -24,7 +24,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -127,7 +126,7 @@ fun CardSetCard(
             .padding(4.dp)
             .combinedClickable(
                 onClick = {
-                    navigate(Destination.CardSetsScreen)
+                    navigate(Destination.CardSetDetailsScreen(cardSet.cardSetId))
                 },
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -196,53 +195,14 @@ fun SelectedItemsNavigationBarActions(
     }
     when {
         deleteConfirmationShown ->
-            DeleteCardsAlertDialog(
-                cardCount = cardCount,
+            DeleteItemsAlertDialog(
+                itemCount = cardCount,
+                singleItemLabel = "card set",
+                multipleItemLabel = "card sets",
                 onConfirmation = deleteSelectedCardSets,
                 onDismiss = hideDeleteConfirmation
             )
     }
-}
-
-@Composable
-fun DeleteCardsAlertDialog(
-    cardCount: Int,
-    onConfirmation: () -> Unit,
-    onDismiss: () -> Unit = {},
-) {
-    AlertDialog(
-        icon = {
-            Icon(imageVector = Icons.Filled.Info, contentDescription = "Info Icon")
-        },
-        title = {
-            Text(text = "Confirm Deletion")
-        },
-        text = {
-            Text(
-                text = if (cardCount == 1)
-                    "Are you sure you want to delete this item?"
-                else
-                    "Are you sure you want to delete these $cardCount items?"
-            )
-        },
-        onDismissRequest = {
-            onDismiss()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirmation
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
 }
 
 

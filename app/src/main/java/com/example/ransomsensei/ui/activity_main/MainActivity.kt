@@ -13,9 +13,11 @@ import androidx.navigation.toRoute
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.ui.WelcomeActivity
 import com.example.ransomsensei.ui.activity_main.components.AddEditCardSetScreen
+import com.example.ransomsensei.ui.activity_main.components.CardSetDetailsScreen
 import com.example.ransomsensei.ui.activity_main.components.CardSetsScreen
 import com.example.ransomsensei.ui.activity_main.util.Destination
 import com.example.ransomsensei.viewmodel.activity_main.AddEditCardSetScreenViewModel
+import com.example.ransomsensei.viewmodel.activity_main.CardSetDetailsScreenViewModel
 import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,6 +50,12 @@ class MainActivity : ComponentActivity() {
                             addEditCardSetScreenViewModel.loadCardSet(args.cardSetId)
                         }
                         AddEditCardSetScreen(navController, addEditCardSetScreenViewModel)
+                    }
+                    composable<Destination.CardSetDetailsScreen> {
+                        val args = it.toRoute<Destination.CardSetDetailsScreen>()
+                        val cardSetDetailsScreenViewModel = koinViewModel<CardSetDetailsScreenViewModel>()
+                        cardSetDetailsScreenViewModel.loadCards(args.cardSetId)
+                        CardSetDetailsScreen(navController, cardSetDetailsScreenViewModel)
                     }
                 }
             }

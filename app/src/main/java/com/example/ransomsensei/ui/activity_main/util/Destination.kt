@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 sealed interface Destination {
     @Serializable object CardSetsScreen : Destination
     @Serializable class AddEditCardSetScreen(val cardSetId: Int? = null): Destination
-
+    @Serializable class CardSetDetailsScreen(val cardSetId: Int): Destination
 }

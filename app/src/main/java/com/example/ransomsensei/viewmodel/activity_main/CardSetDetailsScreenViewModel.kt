@@ -1,4 +1,4 @@
-package com.example.ransomsensei.viewmodel.cardset
+package com.example.ransomsensei.viewmodel.activity_main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CardSetViewModel(
+class CardSetDetailsScreenViewModel(
     private val database: RansomSenseiDatabase
 ) : ViewModel() {
     val cardDao = database.cardDao()
