@@ -12,8 +12,8 @@ class RansomSenseiDataRepositoryImpl(
     val cardDao = database.cardDao()
     val cardSetDao = database.cardSetDao()
 
-    override suspend fun getAllActiveCards() : List<Card> {
-        return cardDao.getAllActive()
+    override suspend fun getRandomActiveCard(): Card? {
+        return cardDao.getRandomActive()
     }
 
     override suspend fun getHomePackage(): String {

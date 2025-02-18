@@ -46,11 +46,7 @@ class LockScreenViewModel(
     fun loadQuestion() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val cards = repository.getAllActiveCards()
-
-                if (cards.isNotEmpty()) {
-                    card = cards[Random.nextInt(cards.size)]
-                }
+                card = repository.getRandomActiveCard()
                 homeActivityPackage = repository.getHomePackage()
                 lastInteraction = repository.getLastInteraction()
             }

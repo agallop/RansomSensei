@@ -44,97 +44,7 @@ class CardDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeCardAndRead() = runTest {
-        val cardSet = CardSet(cardSetId = 1, cardSetName = "test")
-        val card1 = Card(
-            cardSetId = 1,
-            cardId = 1,
-            kanaValue = "いれます",
-            kanjiValue = "入れます",
-            englishValue = "to put in",
-            difficulty = Difficulty.EASY
-        )
-        val card2 = Card(
-            cardSetId = 1,
-            cardId = 2,
-            kanaValue = "たべます",
-            kanjiValue = "食べます",
-            englishValue = "to eat",
-            difficulty = Difficulty.MEDIUM
-        )
-        cardSetDao.insertCardSet(cardSet)
-        cardDao.insertCards(card1, card2)
-
-        val cards = cardDao.getAll()
-        assertThat(cards).containsExactly(card1, card2)
-    }
-
-
-    @Test
-    @Throws(Exception::class)
-    fun writeCardAndGetEasy() = runTest {
-        val cardSet = CardSet(
-            cardSetId = 1,
-            cardSetName = "test"
-        )
-        val card1 = Card(
-            cardSetId = 1,
-            cardId = 1,
-            kanaValue = "いれます",
-            kanjiValue = "入れます",
-            englishValue = "to put in",
-            difficulty = Difficulty.EASY
-        )
-        val card2 = Card(
-            cardSetId = 1,
-            cardId = 2,
-            kanaValue = "たべます",
-            kanjiValue = "食べます",
-            englishValue = "to eat",
-            difficulty = Difficulty.MEDIUM
-        )
-        cardSetDao.insertCardSet(cardSet)
-        cardDao.insertCards(card1, card2)
-
-        val cards = cardDao.loadAllEasy()
-
-        assertThat(cards).containsExactly(card1)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun writeCardAndGetMedium() = runTest {
-        val cardSet = CardSet(
-            cardSetId = 1,
-            cardSetName = "test"
-        )
-        val card1 = Card(
-            cardSetId = 1,
-            cardId = 1,
-            kanaValue = "いれます",
-            kanjiValue = "入れます",
-            englishValue = "to put in",
-            difficulty = Difficulty.EASY
-        )
-        val card2 = Card(
-            cardSetId = 1,
-            cardId = 2,
-            kanaValue = "たべます",
-            kanjiValue = "食べます",
-            englishValue = "to eat",
-            difficulty = Difficulty.MEDIUM
-        )
-        cardSetDao.insertCardSet(cardSet)
-        cardDao.insertCards(card1, card2)
-
-        val cards = cardDao.loadAllMedium()
-
-        assertThat(cards).containsExactly(card2)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun getAllActive() = runTest {
+    fun getRandomActive() = runTest {
         val cardSet1 = CardSet(
             cardSetId = 1,
             cardSetName = "cardSet1",
@@ -173,9 +83,9 @@ class CardDaoTest {
         cardSetDao.insertCardSet(cardSet2)
         cardDao.insertCards(card1, card2, card3)
 
-        val cards = cardDao.getAllActive()
+        val card = cardDao.getRandomActive()
 
-        assertThat(cards).containsExactly(card1, card2)
+        assertThat(card).isIn(listOf( card1, card2))
     }
 
     @Test

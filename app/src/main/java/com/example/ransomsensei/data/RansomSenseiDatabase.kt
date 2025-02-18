@@ -39,7 +39,6 @@ abstract class RansomSenseiDatabase : RoomDatabase() {
                         RansomSenseiDatabase::class.java,
                         DATABASE_NAME
                     )
-                        .fallbackToDestructiveMigration()
                         .addCallback(object : Callback() {
 
                             override fun onOpen(db: SupportSQLiteDatabase) {

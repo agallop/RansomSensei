@@ -8,18 +8,6 @@ import com.example.ransomsensei.data.entity.Difficulty
 class TestRansomSenseiDataRepositoryImpl : RansomSenseiDataRepository {
     var lastInteraction = 0L
 
-    override suspend fun getAllActiveCards(): List<Card> {
-        return listOf(
-            Card(
-                cardId = 1,
-                cardSetId = 1,
-                kanjiValue = "日本語",
-                kanaValue = "にほんご",
-                englishValue = "Japanese",
-                difficulty = Difficulty.EASY)
-        )
-    }
-
     override suspend fun getHomePackage(): String {
         return "com.example.ransomsensei"
     }
@@ -32,5 +20,13 @@ class TestRansomSenseiDataRepositoryImpl : RansomSenseiDataRepository {
         lastInteraction = timestamp
     }
 
-
+    override suspend fun getRandomActiveCard(): Card? {
+        return Card(
+            cardId = 1,
+            cardSetId = 1,
+            kanjiValue = "日本語",
+            kanaValue = "にほんご",
+            englishValue = "Japanese",
+            difficulty = Difficulty.EASY)
+    }
 }

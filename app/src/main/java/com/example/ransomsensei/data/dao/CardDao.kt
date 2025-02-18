@@ -11,22 +11,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CardDao {
-    @Query("SELECT * FROM Card")
-    suspend fun getAll(): List<Card>
-
-    @Query("SELECT * FROM Card " +
-            "INNER JOIN CardSet Using (card_set_id)" +
-            "WHERE card_set_status = 'ENABLED'")
-    suspend fun getAllActive(): List<Card>
-
-    @Query("SELECT * FROM Card WHERE difficulty = 'EASY'")
-    suspend fun loadAllEasy(): List<Card>
-
-    @Query("SELECT * FROM Card WHERE difficulty = 'MEDIUM'")
-    suspend fun loadAllMedium(): List<Card>
-
-    @Query("SELECT * FROM Card WHERE difficulty = 'HARD'")
-    suspend fun loadAllHard(): List<Card>
+    @Query("""
+            WITH random_cardset AS (
+            Select * FROM CardSet
+            ORDER BY RANDOM()
+            limit 1)
+            SELECT * FROM Card
+            INNER JOIN random_cardset Using (card_set_id)
+            ORDER BY RANDOM()
+            limit 1
+        """
+        )
+    suspend fun getRandomActive(): Card?
 
     @Query("SELECT * FROM Card WHERE card_set_id = :cardSetId")
     suspend fun getCardsInSet(cardSetId: Int): List<Card>
