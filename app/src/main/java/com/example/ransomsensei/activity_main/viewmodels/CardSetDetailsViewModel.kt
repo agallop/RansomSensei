@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CardSetDetailsScreenViewModel(
+class CardSetDetailsViewModel(
     private val database: RansomSenseiDatabase
 ) : ViewModel() {
     val cardDao = database.cardDao()

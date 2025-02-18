@@ -11,7 +11,7 @@ import com.example.ransomsensei.data.entity.Difficulty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AddEditCardScreenViewModel(val ransoSenseiDatabase: RansomSenseiDatabase) : ViewModel() {
+class AddEditCardViewModel(val ransoSenseiDatabase: RansomSenseiDatabase) : ViewModel() {
     var englishValue by mutableStateOf<String>("")
         private set
     var kanaValue by mutableStateOf<String>("")

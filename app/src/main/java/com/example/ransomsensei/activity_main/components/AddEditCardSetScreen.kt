@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.activity_main.viewmodels.AddEditCardSetScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.AddEditCardSetViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun AddEditCardSetScreen(
-    navHostController: NavHostController, viewModel: AddEditCardSetScreenViewModel
+    navHostController: NavHostController, viewModel: AddEditCardSetViewModel
 ) {
     AddEditCardSetScreen(
         name = viewModel.name,

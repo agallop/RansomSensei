@@ -11,7 +11,7 @@ import com.example.ransomsensei.data.entity.CardSetStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AddEditCardSetScreenViewModel
+class AddEditCardSetViewModel
     (val database: RansomSenseiDatabase) : ViewModel() {
         var name by mutableStateOf("")
         private set

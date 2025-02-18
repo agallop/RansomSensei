@@ -35,10 +35,10 @@ import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.activity_main.util.Destination
-import com.example.ransomsensei.activity_main.viewmodels.CardSetsScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.CardSetsViewModel
 
 @Composable
-fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsScreenViewModel) {
+fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsViewModel) {
     CardSetsScreen(
         navigate = { navigationController.navigate(it) },
         showDeleteConfirmation = viewModel::showDeleteConfirmation,

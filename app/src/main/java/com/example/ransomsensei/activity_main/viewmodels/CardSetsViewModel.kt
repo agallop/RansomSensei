@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CardSetsScreenViewModel(private val database: RansomSenseiDatabase,
-                              private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
+class CardSetsViewModel(private val database: RansomSenseiDatabase,
+                        private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
     private val _cardSets = MutableStateFlow(emptyList<CardSet>())
     val cardSets = _cardSets.asStateFlow()
     var isLoading by mutableStateOf(true)

@@ -17,10 +17,10 @@ import com.example.ransomsensei.activity_main.components.AddEditCardSetScreen
 import com.example.ransomsensei.activity_main.components.CardSetDetailsScreen
 import com.example.ransomsensei.activity_main.components.CardSetsScreen
 import com.example.ransomsensei.activity_main.util.Destination
-import com.example.ransomsensei.activity_main.viewmodels.AddEditCardScreenViewModel
-import com.example.ransomsensei.activity_main.viewmodels.AddEditCardSetScreenViewModel
-import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsScreenViewModel
-import com.example.ransomsensei.activity_main.viewmodels.CardSetsScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.AddEditCardViewModel
+import com.example.ransomsensei.activity_main.viewmodels.AddEditCardSetViewModel
+import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsViewModel
+import com.example.ransomsensei.activity_main.viewmodels.CardSetsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 val navController = rememberNavController()
-                val viewModel = koinViewModel<CardSetsScreenViewModel>()
+                val viewModel = koinViewModel<CardSetsViewModel>()
 
                 LaunchedEffect(key1 = viewModel.needToSetHomeActivity) {
                     if (viewModel.needToSetHomeActivity) {
@@ -47,26 +47,26 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<Destination.AddEditCardSetScreen> {
                         val args = it.toRoute<Destination.AddEditCardSetScreen>()
-                        val addEditCardSetScreenViewModel = koinViewModel<AddEditCardSetScreenViewModel>()
+                        val addEditCardSetViewModel = koinViewModel<AddEditCardSetViewModel>()
                         when {args.cardSetId != null ->
-                            addEditCardSetScreenViewModel.loadCardSet(args.cardSetId)
+                            addEditCardSetViewModel.loadCardSet(args.cardSetId)
                         }
-                        AddEditCardSetScreen(navController, addEditCardSetScreenViewModel)
+                        AddEditCardSetScreen(navController, addEditCardSetViewModel)
                     }
                     composable<Destination.CardSetDetailsScreen> {
                         val args = it.toRoute<Destination.CardSetDetailsScreen>()
-                        val cardSetDetailsScreenViewModel = koinViewModel<CardSetDetailsScreenViewModel>()
-                        cardSetDetailsScreenViewModel.loadCards(args.cardSetId)
-                        CardSetDetailsScreen(navController, cardSetDetailsScreenViewModel)
+                        val cardSetDetailsViewModel = koinViewModel<CardSetDetailsViewModel>()
+                        cardSetDetailsViewModel.loadCards(args.cardSetId)
+                        CardSetDetailsScreen(navController, cardSetDetailsViewModel)
                     }
                     composable<Destination.AddEditCardScreen> {
                         val args = it.toRoute<Destination.AddEditCardScreen>()
-                        val addEditCardScreenViewModel = koinViewModel<AddEditCardScreenViewModel>()
-                        addEditCardScreenViewModel.updateCardSetId(args.cardSetId)
+                        val addEditCardViewModel = koinViewModel<AddEditCardViewModel>()
+                        addEditCardViewModel.updateCardSetId(args.cardSetId)
                         when {args.cardId != null ->
-                            addEditCardScreenViewModel.loadCard(args.cardId)
+                            addEditCardViewModel.loadCard(args.cardId)
                         }
-                        AddEditCardScreen(navController, addEditCardScreenViewModel)
+                        AddEditCardScreen(navController, addEditCardViewModel)
                     }
 
                 }
