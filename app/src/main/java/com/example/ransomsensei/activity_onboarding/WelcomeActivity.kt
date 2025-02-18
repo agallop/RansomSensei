@@ -70,7 +70,7 @@ class WelcomeActivity : ComponentActivity(){
 
         AppTheme {
             val scope = rememberCoroutineScope()
-            var selected = remember { mutableStateOf("") }
+            val selected = remember { mutableStateOf("") }
             val setDefaultAppActivityIntent = Intent(this, SetDefaultAppActivity::class.java)
             setDefaultAppActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 

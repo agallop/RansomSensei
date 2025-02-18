@@ -28,8 +28,6 @@ class CardSetDetailsScreenViewModel(
     val cards = _cards.asStateFlow()
     var selectedCards by mutableStateOf<Set<Card>>(setOf())
         private set
-    var hasChanges by mutableStateOf(false)
-        private set
     var showDeleteConfirmation by mutableStateOf(false)
         private set
 

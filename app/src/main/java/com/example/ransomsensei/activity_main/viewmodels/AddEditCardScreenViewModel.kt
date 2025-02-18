@@ -23,7 +23,7 @@ class AddEditCardScreenViewModel(val ransoSenseiDatabase: RansomSenseiDatabase) 
     private var cardSetId by mutableStateOf<Int>(0)
         private set
 
-    private var _existingCard: Card? = null;
+    private var _existingCard: Card? = null
     fun loadCard(cardId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _existingCard = ransoSenseiDatabase.cardDao().getCard(cardId)
