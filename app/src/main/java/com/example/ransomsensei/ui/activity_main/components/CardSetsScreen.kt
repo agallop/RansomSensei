@@ -33,14 +33,17 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
+import com.example.ransomsensei.ui.activity_main.util.Destination
 import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
 
 @Composable
-fun CardSetsScreen(viewModel: CardSetsScreenViewModel) {
+fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsScreenViewModel) {
     CardSetsScreen(
+        navigate = { navigationController.navigate(it) },
         showDeleteConfirmation = viewModel::showDeleteConfirmation,
         hideDeleteConfirmation = viewModel::hideDeleteConfirmation,
         deleteSelectedCardSets = viewModel::deleteSelectedCardSets,
@@ -54,7 +57,8 @@ fun CardSetsScreen(viewModel: CardSetsScreenViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardSetsScreen(
+private fun CardSetsScreen(
+    navigate: (Destination) -> Unit,
     showDeleteConfirmation: () -> Unit,
     hideDeleteConfirmation: () -> Unit,
     deleteSelectedCardSets: () -> Unit,
@@ -76,7 +80,7 @@ fun CardSetsScreen(
                 actions =
                 {
                     if (selectedCardSets.isEmpty()) {
-                        NoSelectedItemsNavigationBarActions()
+                        NoSelectedItemsNavigationBarActions(navigate = navigate)
                     } else SelectedItemsNavigationBarActions(
                         showDeleteConfirmation = showDeleteConfirmation,
                         hideDeleteConfirmation = hideDeleteConfirmation,
@@ -96,6 +100,7 @@ fun CardSetsScreen(
 
             items(cardSets) {
                 CardSetCard(
+                    navigate = navigate,
                     cardSet = it,
                     isSelected = selectedCardSets.contains(it),
                     onCardSetLongClick = onCardSetLongClick,
@@ -108,6 +113,7 @@ fun CardSetsScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CardSetCard(
+    navigate: (Destination) -> Unit,
     cardSet: CardSet,
     isSelected: Boolean,
     onCardSetLongClick: (CardSet) -> Unit,
@@ -121,7 +127,7 @@ fun CardSetCard(
             .padding(4.dp)
             .combinedClickable(
                 onClick = {
-                    // startCardSetActivity(cardSet.cardSetId)
+                    navigate(Destination.CardSetsScreen)
                 },
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -168,9 +174,9 @@ fun CardSetCard(
 }
 
 @Composable
-fun NoSelectedItemsNavigationBarActions() {
+fun NoSelectedItemsNavigationBarActions(navigate: (Destination) -> Unit) {
     IconButton(onClick = {
-       // startAddCardSetActivity()
+       navigate(Destination.AddEditCardSetScreen())
     }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
 }
 
@@ -239,29 +245,13 @@ fun DeleteCardsAlertDialog(
     )
 }
 
-/*
-private fun startAddCardSetActivity() {
-    val intent = Intent(this, AddCardSetActivity::class.java)
-    startActivity(intent)
-}
-
-private fun startCardSetActivity(cardSetId: Int) {
-    val intent = Intent(this, CardSetActivity::class.java)
-    intent.putExtra(CardSetActivity.CARD_SET_ID_EXTRA, cardSetId)
-    startActivity(intent)
-}
-
-private fun startWelcomeActivity() {
-    val intent = Intent(this, WelcomeActivity::class.java)
-    startActivity(intent)
-} */
-
 
 @PreviewLightDark
 @Composable
 fun CardSetsScreenPreview() {
     AppTheme {
         CardSetsScreen(
+            navigate = {},
             showDeleteConfirmation = {},
             hideDeleteConfirmation = {},
             deleteSelectedCardSets = {},

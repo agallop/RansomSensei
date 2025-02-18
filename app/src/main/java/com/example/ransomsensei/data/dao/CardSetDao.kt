@@ -28,7 +28,7 @@ interface CardSetDao {
     suspend fun deleteCardSets(cardSets: Collection<CardSet>)
 
     @Query("Select * FROM CardSet WHERE card_set_id = :cardSetId")
-    suspend fun getCardSet(cardSetId: Int): CardSet
+    suspend fun getCardSet(cardSetId: Int): CardSet?
 
     @Query("Select * FROM CardSet WHERE card_set_id = :cardSetId")
     fun getCardSetFlow(cardSetId: Int): Flow<CardSet>

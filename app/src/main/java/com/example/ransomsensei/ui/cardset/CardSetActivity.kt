@@ -163,7 +163,7 @@ class CardSetActivity : ComponentActivity() {
     @Composable
     fun NoSelectedItemsNavigationBarActions(cardSetId: Int) {
         IconButton(onClick = {
-            startEditCardSetActivity(cardSetId)
+            // startEditCardSetActivity(cardSetId)
         }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
 
         IconButton(onClick = {
@@ -233,12 +233,6 @@ class CardSetActivity : ComponentActivity() {
         val addCardActivityIntent = Intent(this, AddCardActivity::class.java)
         addCardActivityIntent.putExtra(AddCardActivity.CARD_SET_ID_EXTRA, cardSetId)
         startActivity(addCardActivityIntent)
-    }
-
-    private fun startEditCardSetActivity(cardSetId: Int) {
-        val editCardSetActivityIntent = Intent(this, EditCardSetActivity::class.java)
-        editCardSetActivityIntent.putExtra(EditCardSetActivity.CARD_SET_ID_EXTRA, cardSetId)
-        startActivity(editCardSetActivityIntent)
     }
 
     private fun startEditCardActivity(cardId: Int) {

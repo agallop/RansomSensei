@@ -61,17 +61,6 @@
         </activity>
 
         <activity
-            android:name=".ui.cardset.AddCardSetActivity"
-            android:exported="true"
-            android:theme="@style/Theme.RansomSensei.NoActionBar" >
-        </activity>
-        <activity
-            android:name=".ui.cardset.EditCardSetActivity"
-            android:exported="true"
-            android:theme="@style/Theme.RansomSensei.NoActionBar" >
-        </activity>
-
-        <activity
             android:name=".ui.cardset.CardSetActivity"
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >

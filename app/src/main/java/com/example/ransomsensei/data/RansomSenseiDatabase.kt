@@ -13,7 +13,9 @@ import com.example.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [CardSet::class, Card::class], version = 6)
+@Database(entities = [CardSet::class, Card::class],
+    exportSchema = true,
+    version = 6)
 abstract class RansomSenseiDatabase : RoomDatabase() {
     abstract fun cardDao(): CardDao
 
