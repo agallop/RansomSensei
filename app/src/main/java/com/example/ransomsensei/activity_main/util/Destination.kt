@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui.activity_main.util
+package com.example.ransomsensei.activity_main.util
 
 import kotlinx.serialization.Serializable
 

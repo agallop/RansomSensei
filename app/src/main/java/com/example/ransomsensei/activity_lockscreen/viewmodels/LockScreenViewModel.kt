@@ -1,4 +1,4 @@
-package com.example.ransomsensei.viewmodel
+package com.example.ransomsensei.activity_lockscreen.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

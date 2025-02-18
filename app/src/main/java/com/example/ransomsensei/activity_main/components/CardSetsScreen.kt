@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui.activity_main.components
+package com.example.ransomsensei.activity_main.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -12,8 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,8 +34,8 @@ import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.ui.activity_main.util.Destination
-import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
+import com.example.ransomsensei.activity_main.util.Destination
+import com.example.ransomsensei.activity_main.viewmodels.CardSetsScreenViewModel
 
 @Composable
 fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsScreenViewModel) {

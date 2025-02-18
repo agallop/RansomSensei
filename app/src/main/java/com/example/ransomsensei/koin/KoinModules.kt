@@ -4,12 +4,11 @@ import com.example.ransomsensei.data.RansomSenseiDataRepositoryImpl
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.RansomSenseiDataRepository
-import com.example.ransomsensei.viewmodel.LockScreenViewModel
-import com.example.ransomsensei.viewmodel.activity_main.CardSetsScreenViewModel
-import com.example.ransomsensei.viewmodel.SettingsViewModel
-import com.example.ransomsensei.viewmodel.activity_main.AddEditCardSetScreenViewModel
-import com.example.ransomsensei.viewmodel.activity_main.AddEditCardScreenViewModel
-import com.example.ransomsensei.viewmodel.activity_main.CardSetDetailsScreenViewModel
+import com.example.ransomsensei.activity_lockscreen.viewmodels.LockScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.CardSetsScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.AddEditCardSetScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.AddEditCardScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsScreenViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -26,5 +25,4 @@ val viewModelModule = module {
     viewModel { LockScreenViewModel(get()) }
     viewModel { AddEditCardSetScreenViewModel(get()) }
     viewModel { AddEditCardScreenViewModel(get()) }
-    viewModel { SettingsViewModel(get()) }
 }

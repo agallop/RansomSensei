@@ -1,4 +1,4 @@
-package com.example.ransomsensei.viewmodel.activity_main
+package com.example.ransomsensei.activity_main.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

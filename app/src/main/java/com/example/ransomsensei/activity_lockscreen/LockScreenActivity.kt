@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui
+package com.example.ransomsensei.activity_lockscreen
 
 import android.content.Intent
 import android.os.Bundle
@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.viewmodel.LockScreenViewModel
+import com.example.ransomsensei.activity_lockscreen.viewmodels.LockScreenViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.koinViewModel

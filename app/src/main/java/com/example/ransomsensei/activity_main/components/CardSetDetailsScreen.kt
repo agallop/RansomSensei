@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui.activity_main.components
+package com.example.ransomsensei.activity_main.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -34,8 +34,8 @@ import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.ui.activity_main.util.Destination
-import com.example.ransomsensei.viewmodel.activity_main.CardSetDetailsScreenViewModel
+import com.example.ransomsensei.activity_main.util.Destination
+import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

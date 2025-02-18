@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui.activity_main.components
+package com.example.ransomsensei.activity_main.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info

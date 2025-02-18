@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui
+package com.example.ransomsensei.activity_onboarding
 
 import android.content.Intent
 import android.content.pm.PackageManager

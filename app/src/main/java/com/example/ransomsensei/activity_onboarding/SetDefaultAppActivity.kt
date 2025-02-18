@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui
+package com.example.ransomsensei.activity_onboarding
 
 import android.app.role.RoleManager
 import android.os.Bundle
