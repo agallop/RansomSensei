@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.ransomsensei.data.RansomSenseiDatabase
-import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.data.entity.CardSetStatus
 import kotlinx.coroutines.test.runTest
@@ -17,7 +16,6 @@ import org.junit.runner.RunWith
 import java.io.IOException
 import kotlin.jvm.Throws
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.delay
 
 @RunWith(AndroidJUnit4::class)
 class CardSetDaoTest {
