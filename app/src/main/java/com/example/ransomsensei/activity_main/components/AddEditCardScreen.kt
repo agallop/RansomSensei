@@ -26,7 +26,7 @@ import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.Difficulty
-import com.example.ransomsensei.activity_main.viewmodels.AddEditCardScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.AddEditCardViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditCardScreen(navController: NavHostController, viewModel: AddEditCardScreenViewModel) {
+fun AddEditCardScreen(navController: NavHostController, viewModel: AddEditCardViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

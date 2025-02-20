@@ -35,13 +35,13 @@ import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
 import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.activity_main.util.Destination
-import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsScreenViewModel
+import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardSetDetailsScreen(
     navHostController: NavHostController,
-    viewModel: CardSetDetailsScreenViewModel
+    viewModel: CardSetDetailsViewModel
 ) {
     AppTheme {
         val cards = viewModel.cards.collectAsState().value
@@ -101,7 +101,7 @@ fun CardSetDetailsScreen(
 @Composable
 fun CardItem(
     card: Card,
-    viewModel: CardSetDetailsScreenViewModel,
+    viewModel: CardSetDetailsViewModel,
     navHostController: NavHostController
 
 ) {
@@ -170,7 +170,7 @@ fun NoSelectedItemsNavigationBarActions(cardSetId: Int, navHostController: NavHo
 
 @Composable
 fun SelectedItemsNavigationBarActions(
-    viewModel: CardSetDetailsScreenViewModel
+    viewModel: CardSetDetailsViewModel
 ) {
     IconButton(onClick = {
         viewModel.showDeleteConfirmation()

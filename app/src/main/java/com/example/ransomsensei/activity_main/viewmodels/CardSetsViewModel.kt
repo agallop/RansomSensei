@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CardSetsScreenViewModel(
+class CardSetsViewModel(
     private val repository: RansomSenseiDataRepository
 ) : ViewModel() {
     private val _cardSets = MutableStateFlow(emptyList<CardSet>())
