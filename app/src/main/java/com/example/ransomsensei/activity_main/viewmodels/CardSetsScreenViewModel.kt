@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ransomsensei.data.RansomSenseiDataRepository
 import com.example.ransomsensei.data.RansomSenseiDataStoreManager
 import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.CardSet
@@ -15,8 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CardSetsScreenViewModel(private val database: RansomSenseiDatabase,
-                              private val dataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
+class CardSetsScreenViewModel(
+    private val repository: RansomSenseiDataRepository
+) : ViewModel() {
     private val _cardSets = MutableStateFlow(emptyList<CardSet>())
     val cardSets = _cardSets.asStateFlow()
     var isLoading by mutableStateOf(true)
@@ -31,14 +33,14 @@ class CardSetsScreenViewModel(private val database: RansomSenseiDatabase,
     fun loadCardSets() {
         println("loadCardSets")
         viewModelScope.launch {
-            database.cardSetDao().getAllFlow().collect { cardSets ->
+            repository.getAllCardSetsFlow().collect { cardSets ->
                 selectedCardSets = setOf()
                 _cardSets.update { cardSets }
             }
         }
 
         viewModelScope.launch {
-            needToSetHomeActivity = dataStoreManager.getHomeActivity().isEmpty()
+            needToSetHomeActivity = repository.getHomePackage().isBlank()
             isLoading = false
         }
     }
@@ -59,7 +61,7 @@ class CardSetsScreenViewModel(private val database: RansomSenseiDatabase,
 
     fun deleteSelectedCardSets() {
         CoroutineScope(Dispatchers.IO).launch {
-            database.cardSetDao().deleteCardSets(selectedCardSets.toList())
+            repository.deleteCardSets(selectedCardSets.toList())
             selectedCardSets = setOf()
             showDeleteConfirmation = false
         }

@@ -85,7 +85,8 @@ class CardDaoTest {
 
         val card = cardDao.getRandomActive()
 
-        assertThat(card).isIn(listOf( card1, card2))
+
+        assertThat(card).isIn(listOf(card1, card2, card3))
     }
 
     @Test

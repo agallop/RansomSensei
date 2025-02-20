@@ -20,7 +20,7 @@ val appModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { CardSetsScreenViewModel(get(), get()) }
+    viewModel { CardSetsScreenViewModel(get()) }
     viewModel { CardSetDetailsScreenViewModel(get()) }
     viewModel { LockScreenViewModel(get()) }
     viewModel { AddEditCardSetScreenViewModel(get()) }

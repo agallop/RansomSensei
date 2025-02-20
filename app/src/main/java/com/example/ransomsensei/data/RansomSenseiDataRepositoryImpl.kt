@@ -1,12 +1,11 @@
 package com.example.ransomsensei.data
 
-import com.example.ransomsensei.data.dao.CardDao
-import com.example.ransomsensei.data.dao.CardSetDao
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
+import kotlinx.coroutines.flow.Flow
 
 class RansomSenseiDataRepositoryImpl(
-    val database: RansomSenseiDatabase,
+    database: RansomSenseiDatabase,
     val dataStoreManager: RansomSenseiDataStoreManager
 ) : RansomSenseiDataRepository {
     val cardDao = database.cardDao()
@@ -14,6 +13,22 @@ class RansomSenseiDataRepositoryImpl(
 
     override suspend fun getRandomActiveCard(): Card? {
         return cardDao.getRandomActive()
+    }
+
+    override fun getCardSetFlow(cardSetId: Int): Flow<CardSet> {
+        return cardSetDao.getCardSetFlow(cardSetId)
+    }
+
+    override fun getAllCardSetsFlow(): Flow<List<CardSet>> {
+        return cardSetDao.getAllFlow()
+    }
+
+    override fun getCardsInSetFlow(cardSetId: Int): Flow<List<Card>> {
+        return cardDao.getCardsInSetFlow(cardSetId)
+    }
+
+    override suspend fun deleteCardSets(cardSets: List<CardSet>) {
+        cardSetDao.deleteCardSets(cardSets)
     }
 
     override suspend fun getHomePackage(): String {
@@ -27,6 +42,4 @@ class RansomSenseiDataRepositoryImpl(
     override suspend fun setLastInteraction(timestamp: Long) {
         dataStoreManager.setLastInteraction(timestamp)
     }
-
-
 }

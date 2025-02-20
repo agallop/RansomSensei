@@ -1,4 +1,4 @@
-package com.example.ransomsensei.ui
+package com.example.ransomsensei.activity_lockscreen
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -10,7 +10,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.ransomsensei.activity_lockscreen.LockScreenActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

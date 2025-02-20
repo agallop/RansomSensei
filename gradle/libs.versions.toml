@@ -25,6 +25,7 @@ turbine = "1.2.0"
 truth = "1.4.4"
 navigationCompose = "2.9.0-alpha06"
 kotlinxSerializationJson = "1.8.0"
+mockitoKotlin = "5.4.0"
 
 [libraries]
 
@@ -69,6 +70,7 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
