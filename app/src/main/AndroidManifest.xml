@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity_onboarding.WelcomeActivity"
+            android:name=".activity_onboarding.OnboardingActivity"
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >
         </activity>

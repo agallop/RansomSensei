@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.ransomsensei.theme.AppTheme
-import com.example.ransomsensei.activity_onboarding.WelcomeActivity
+import com.example.ransomsensei.activity_onboarding.OnboardingActivity
 import com.example.ransomsensei.activity_main.components.AddEditCardScreen
 import com.example.ransomsensei.activity_main.components.AddEditCardSetScreen
 import com.example.ransomsensei.activity_main.components.CardSetDetailsScreen
@@ -21,6 +21,7 @@ import com.example.ransomsensei.activity_main.viewmodels.AddEditCardViewModel
 import com.example.ransomsensei.activity_main.viewmodels.AddEditCardSetViewModel
 import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsViewModel
 import com.example.ransomsensei.activity_main.viewmodels.CardSetsViewModel
+import com.example.ransomsensei.activity_main.viewmodels.MainActivityViewModel
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -32,16 +33,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 val navController = rememberNavController()
-                val viewModel = koinViewModel<CardSetsViewModel>()
+                val mainActivityViewModel = koinViewModel<MainActivityViewModel>()
 
-                LaunchedEffect(key1 = viewModel.needToSetHomeActivity) {
-                    if (viewModel.needToSetHomeActivity) {
-                        startWelcomeActivity()
+                LaunchedEffect(key1 = mainActivityViewModel.needToSetHomeActivity) {
+                    if (true) {
+                        startOnboardingActivity()
                     }
                 }
 
                 NavHost(navController = navController, startDestination = Destination.CardSetsScreen) {
                     composable<Destination.CardSetsScreen> {
+                        val viewModel = koinViewModel<CardSetsViewModel>()
                         viewModel.loadCardSets()
                         CardSetsScreen(navController, viewModel)
                     }
@@ -74,8 +76,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun startWelcomeActivity() {
-        val intent = Intent(this, WelcomeActivity::class.java)
+    private fun startOnboardingActivity() {
+        val intent = Intent(this, OnboardingActivity::class.java)
         startActivity(intent)
     }
 }
