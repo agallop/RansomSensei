@@ -1,8 +1,8 @@
 [versions]
-activityCompose = "1.9.3"
+activityCompose = "1.10.0"
 accompanist = "0.36.0"
-agp = "8.8.0"
-datastorePreferences = "1.1.1"
+agp = "8.8.1"
+datastorePreferences = "1.1.2"
 kotlin = "2.0.20"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -13,11 +13,11 @@ material = "1.12.0"
 constraintlayout = "2.2.0"
 lifecycleLivedataKtx = "2.8.7"
 lifecycleViewmodelKtx = "2.8.7"
-navigationFragmentKtx = "2.8.5"
-navigationUiKtx = "2.8.5"
+navigationFragmentKtx = "2.8.7"
+navigationUiKtx = "2.8.7"
 junitKtx = "1.2.1"
 roomRuntime = "2.6.1"
-googleFonts = "1.7.6"
+googleFonts = "1.7.8"
 koinAndroid = "4.1.0-Beta5"
 koinAndroidxCompose = "4.1.0-Beta5"
 runner = "1.6.2"
@@ -77,4 +77,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+androidx-room = { id = "androidx.room", version.ref = "roomRuntime" }
 

@@ -1,0 +1,66 @@
+package org.ransomsensei.activity_main.viewmodels
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import org.ransomsensei.data.RansomSenseiDataRepository
+import org.ransomsensei.data.entity.CardSet
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class CardSetsViewModel(
+    private val repository: RansomSenseiDataRepository
+) : ViewModel() {
+    private val _cardSets = MutableStateFlow(emptyList<CardSet>())
+    val cardSets = _cardSets.asStateFlow()
+    var isLoading by mutableStateOf(true)
+        private set
+    var needToSetHomeActivity by mutableStateOf(false)
+        private set
+    var selectedCardSets by mutableStateOf<Set<CardSet>>(setOf())
+        private set
+    var showDeleteConfirmation by mutableStateOf(false)
+        private set
+
+    fun loadCardSets() {
+        viewModelScope.launch {
+            repository.getAllCardSetsFlow().collect { cardSets ->
+                selectedCardSets = setOf()
+                _cardSets.update { cardSets }
+            }
+        }
+
+        viewModelScope.launch {
+            needToSetHomeActivity = repository.getHomePackage().isBlank()
+            isLoading = false
+        }
+    }
+
+    fun toggleCardSetSelection(cardSet: CardSet) {
+        selectedCardSets = selectedCardSets.toMutableSet().apply {
+            if (contains(cardSet)) remove(cardSet) else add(cardSet)
+        }
+    }
+
+    fun showDeleteConfirmation() {
+        showDeleteConfirmation = true
+    }
+
+    fun hideDeleteConfirmation() {
+        showDeleteConfirmation = false
+    }
+
+    fun deleteSelectedCardSets() {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.deleteCardSets(selectedCardSets.toList())
+            selectedCardSets = setOf()
+            showDeleteConfirmation = false
+        }
+    }
+}

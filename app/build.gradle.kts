@@ -3,21 +3,25 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.androidx.room)
     id("com.google.devtools.ksp")
+
 }
 
+
+
 android {
-    namespace = "com.example.ransomsensei"
+    namespace = "org.ransomsensei"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.ransomsensei"
+        applicationId = "org.ransomsensei"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "com.example.ransomsensei.di.testing.InstrumentationTestRunner"
+        testInstrumentationRunner = "org.ransomsensei.di.testing.InstrumentationTestRunner"
     }
 
     buildTypes {
@@ -39,6 +43,9 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+    }
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 

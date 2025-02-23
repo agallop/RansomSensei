@@ -1,0 +1,114 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "0448cd04c0c8b0e74f7cfccadc36b9c4",
+    "entities": [
+      {
+        "tableName": "CardSet",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`card_set_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `card_set_name` TEXT NOT NULL, `card_set_status` TEXT NOT NULL, `card_count` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "cardSetId",
+            "columnName": "card_set_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardSetName",
+            "columnName": "card_set_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardSetStatus",
+            "columnName": "card_set_status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardCount",
+            "columnName": "card_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "card_set_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Card",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`card_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `card_set_id` INTEGER NOT NULL, `kana_value` TEXT NOT NULL, `kanji_value` TEXT NOT NULL, `english_value` TEXT NOT NULL, `difficulty` TEXT NOT NULL, FOREIGN KEY(`card_set_id`) REFERENCES `CardSet`(`card_set_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "cardId",
+            "columnName": "card_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardSetId",
+            "columnName": "card_set_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kanaValue",
+            "columnName": "kana_value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kanjiValue",
+            "columnName": "kanji_value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "englishValue",
+            "columnName": "english_value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "difficulty",
+            "columnName": "difficulty",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "card_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "CardSet",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "card_set_id"
+            ],
+            "referencedColumns": [
+              "card_set_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0448cd04c0c8b0e74f7cfccadc36b9c4')"
+    ]
+  }
+}
