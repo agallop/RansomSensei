@@ -81,6 +81,6 @@ class TestRansomSenseiDataRepositoryImpl(val context: Context) : RansomSenseiDat
     }
 
     override fun isDefaultHomeApp(): Boolean {
-        TODO("Not yet implemented")
+        return true;
     }
 }
