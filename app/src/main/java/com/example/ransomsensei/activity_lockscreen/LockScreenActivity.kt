@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.ransomsensei.theme.AppTheme
@@ -47,6 +49,7 @@ class LockScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        enableEdgeToEdge()
         setContent {
             val viewModel = koinViewModel<LockScreenViewModel>()
             WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -201,7 +204,7 @@ class LockScreenActivity : ComponentActivity() {
         finish()
     }
 
-    @Preview
+    @PreviewLightDark
     @Composable
     fun LockScreenPreview() {
         AppTheme {
@@ -217,25 +220,6 @@ class LockScreenActivity : ComponentActivity() {
                 homeActivityPackage = "",
                 allowSkip = true,
                 currentCountDown = flow { })
-        }
-    }
-
-    @Preview
-    @Composable
-    fun DarkModeLockScreenPreview() {
-        AppTheme(darkTheme = true) {
-            LockScreen(isLoading = false,
-                showQuestion = true,
-                kanaValue = "にちようび",
-                kanjiValue = "日曜日",
-                englishValue = "sunday",
-                currentAnswer = "Sunday",
-                onCurrentAnswerChange = {},
-                loadQuestion = {},
-                updateLastInteraction = {},
-                homeActivityPackage = "",
-                allowSkip = true,
-                currentCountDown = flow {})
         }
     }
 }
