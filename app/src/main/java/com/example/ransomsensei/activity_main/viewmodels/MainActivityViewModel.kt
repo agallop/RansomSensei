@@ -17,7 +17,6 @@ class MainActivityViewModel(val repository: RansomSenseiDataRepository) : ViewMo
         viewModelScope.launch(Dispatchers.IO) {
             needToLaunchOnboardingActivity = repository.getHomePackage().isEmpty() ||
                     !repository.isDefaultHomeApp()
-            println(needToLaunchOnboardingActivity)
         }
     }
 }

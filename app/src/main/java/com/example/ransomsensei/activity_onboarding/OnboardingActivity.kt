@@ -53,7 +53,6 @@ class OnboardingActivity : ComponentActivity() {
                         navController = navHostController,
                         startDestination = Destination.StartOnBoardingScreen
                     ) {
-                        println(activityViewModel.destinationGraph)
                         composable<Destination.StartOnBoardingScreen> {
                             val screenViewModel = koinViewModel<StartOnboardingViewModel>()
                             screenViewModel.nextDestination =

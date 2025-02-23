@@ -35,14 +35,12 @@ class CardSetDetailsViewModel(
         this.cardSetId = cardSetId
         viewModelScope.launch(Dispatchers.IO) {
             cardSetDao.getCardSetFlow(cardSetId).collect { cardSet ->
-                println(cardSet)
                 _cardSet.update { cardSet }
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             cardDao.getCardsInSetFlow(cardSetId).collect { cards ->
-                println(cards)
                 _cards.update { cards }
             }
         }

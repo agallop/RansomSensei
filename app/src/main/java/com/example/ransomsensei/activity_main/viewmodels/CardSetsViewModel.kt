@@ -31,7 +31,6 @@ class CardSetsViewModel(
         private set
 
     fun loadCardSets() {
-        println("loadCardSets")
         viewModelScope.launch {
             repository.getAllCardSetsFlow().collect { cardSets ->
                 selectedCardSets = setOf()

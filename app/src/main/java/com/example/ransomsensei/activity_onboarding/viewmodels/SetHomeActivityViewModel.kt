@@ -25,11 +25,6 @@ class SetHomeActivityViewModel(packageManager: PackageManager, val ransomSenseiD
             packageManager.queryIntentActivities(launcher, PackageManager.MATCH_ALL)
 
         if (resolveInfos.isNotEmpty()) {
-            for (resolveInfo in resolveInfos) {
-                println(resolveInfo.activityInfo.packageName)
-                println(resolveInfo.iconResource)
-            }
-
             for (packageInfo in resolveInfos) {
                 val label = packageInfo.loadLabel(packageManager).toString()
                 if (label.isNotEmpty() &&
