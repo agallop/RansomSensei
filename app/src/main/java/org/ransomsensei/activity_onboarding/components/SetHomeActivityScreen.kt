@@ -146,7 +146,7 @@ fun SetHomeActivityScreenPreview() {
                     label = "Home Activity 1",
                     icon = ResourcesCompat.getDrawable(
                         resources,
-                        R.drawable.ic_launcher_foreground,
+                        R.mipmap.ic_launcher,
                         resources.newTheme()
                     )!!
                 ),
@@ -155,7 +155,7 @@ fun SetHomeActivityScreenPreview() {
                     label = "Home Activity 2",
                     icon = ResourcesCompat.getDrawable(
                         resources,
-                        R.drawable.ic_launcher_foreground,
+                        R.mipmap.ic_launcher,
                         resources.newTheme()
                     )!!
                 )
