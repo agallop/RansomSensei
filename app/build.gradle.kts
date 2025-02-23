@@ -17,7 +17,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "com.example.ransomsensei.koin.testing.InstrumentationTestRunner"
+        testInstrumentationRunner = "com.example.ransomsensei.di.testing.InstrumentationTestRunner"
     }
 
     buildTypes {

@@ -7,7 +7,7 @@ import com.example.ransomsensei.activity_onboarding.viewmodels.StartOnboardingVi
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val onboardingActivityKoinModules = module {
+val onboardingActivityModule = module {
     viewModel { SetHomeActivityViewModel(get(), get()) }
     viewModel { SetDefaultHomeAppViewModel() }
     viewModel { OnboardingActivityViewModel(get()) }

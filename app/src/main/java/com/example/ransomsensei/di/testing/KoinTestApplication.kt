@@ -1,8 +1,8 @@
 package com.example.ransomsensei.di.testing
 
 import android.app.Application
-import com.example.ransomsensei.di.appModule
-import com.example.ransomsensei.di.viewModelModule
+import com.example.ransomsensei.activity_lockscreen.di.lockScreenActivityModule
+import com.example.ransomsensei.data.di.testing.testDataRepositoryModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -12,7 +12,10 @@ class KoinTestApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@KoinTestApplication)
-            modules(appModule, testModule, viewModelModule)
+            modules(
+                testDataRepositoryModule,
+                lockScreenActivityModule,
+            )
         }
     }
 }
