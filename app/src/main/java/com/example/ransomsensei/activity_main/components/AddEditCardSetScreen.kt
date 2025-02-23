@@ -37,6 +37,7 @@ fun AddEditCardSetScreen(
     navHostController: NavHostController, viewModel: AddEditCardSetViewModel
 ) {
     AddEditCardSetScreen(
+        isNew = viewModel.isNew,
         name = viewModel.name,
         status = viewModel.status,
         onNameChange = viewModel::onNameChange,
@@ -49,6 +50,7 @@ fun AddEditCardSetScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCardSetScreen(
+    isNew: Boolean,
     name: String,
     status: CardSetStatus,
     onNameChange: (String) -> Unit,
@@ -64,7 +66,7 @@ fun AddEditCardSetScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Edit set")
+                    Text(if (isNew) "Add set" else "Edit Set")
                 },
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
@@ -124,6 +126,7 @@ fun AddEditCardSetScreen(
 fun AddEditCardSetScreenPreview() {
     AppTheme {
         AddEditCardSetScreen(
+            isNew = true,
             name = "Days of the Week",
             status = CardSetStatus.ENABLED,
             onNameChange = {},

@@ -16,13 +16,19 @@ class AddEditCardSetViewModel
         var name by mutableStateOf("")
         private set
         var status by mutableStateOf(CardSetStatus.UNKNOWN)
+        var isNew by mutableStateOf(true)
+        private set
         private var _existingCardSet: CardSet? = null
+
 
     fun loadCardSet(cardSetId: Int) {
             viewModelScope.launch(Dispatchers.IO) {
                 _existingCardSet = database.cardSetDao().getCardSet(cardSetId)
-                name = _existingCardSet?.cardSetName ?: ""
-                status = _existingCardSet?.cardSetStatus ?: CardSetStatus.UNKNOWN
+                if (_existingCardSet != null) {
+                    name = _existingCardSet?.cardSetName ?: ""
+                    status = _existingCardSet?.cardSetStatus ?: CardSetStatus.UNKNOWN
+                    isNew = false
+                }
             }
         }
 
