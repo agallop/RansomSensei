@@ -11,6 +11,7 @@ import org.ransomsensei.data.entity.Difficulty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 /** Test implementation of [RansomSenseiDataRepository] */
@@ -48,8 +49,10 @@ class TestRansomSenseiDataRepositoryImpl(val context: Context) : RansomSenseiDat
         cardDao.insertCards(card)
     }
 
-    override suspend fun getHomePackage(): String {
-        return "org.ransomsensei"
+    override fun getHomePackage(): Flow<String> {
+        return flow {
+            emit("org.ransomsensei")
+        }
     }
 
     override suspend fun getLastInteraction(): Long {

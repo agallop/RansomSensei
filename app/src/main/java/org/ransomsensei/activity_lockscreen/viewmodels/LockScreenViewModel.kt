@@ -9,6 +9,7 @@ import org.ransomsensei.data.RansomSenseiDataRepository
 import org.ransomsensei.data.entity.Card
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,7 +47,7 @@ class LockScreenViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 card = repository.getRandomActiveCard()
-                homeActivityPackage = repository.getHomePackage()
+                homeActivityPackage = repository.getHomePackage().first()
                 lastInteraction = repository.getLastInteraction()
             }
 

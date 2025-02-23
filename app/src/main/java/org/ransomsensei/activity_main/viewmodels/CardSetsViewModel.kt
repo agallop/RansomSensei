@@ -37,7 +37,9 @@ class CardSetsViewModel(
         }
 
         viewModelScope.launch {
-            needToSetHomeActivity = repository.getHomePackage().isBlank()
+            repository.getHomePackage().collect {
+                needToSetHomeActivity = it.isEmpty()
+            }
             isLoading = false
         }
     }

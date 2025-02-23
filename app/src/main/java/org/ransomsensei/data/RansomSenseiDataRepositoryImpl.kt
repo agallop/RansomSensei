@@ -34,7 +34,7 @@ class RansomSenseiDataRepositoryImpl(
         cardSetDao.deleteCardSets(cardSets)
     }
 
-    override suspend fun getHomePackage(): String {
+    override fun getHomePackage(): Flow<String> {
         return dataStoreManager.getHomeActivity()
     }
 

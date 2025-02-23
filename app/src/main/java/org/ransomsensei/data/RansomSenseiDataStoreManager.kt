@@ -27,11 +27,11 @@ class RansomSenseiDataStoreManager(val context: Context){
         }
     }
 
-    suspend fun getHomeActivity() : String {
+     fun getHomeActivity() : Flow<String> {
         return context.preferenceDataStore.data.map {
             preferences ->
             preferences[HOME_ACTIVITY] ?: ""
-        }.first()
+        }
     }
 
     suspend fun setLastInteraction(timestamp: Long) {

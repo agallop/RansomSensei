@@ -11,6 +11,10 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 class OnboardingActivityViewModel(val repository: RansomSenseiDataRepository) : ViewModel() {
     val destinationGraph = mutableStateMapOf<Destination, Destination>()
@@ -25,13 +29,15 @@ class OnboardingActivityViewModel(val repository: RansomSenseiDataRepository) : 
                 nextDestination = Destination.SetDefaultHomeAppScreen
             }
 
-            if (repository.getHomePackage() == "") {
+            if (repository.getHomePackage().first() == "") {
                 destinationGraph.put(Destination.SetHomeActivityScreen, nextDestination)
                 nextDestination = Destination.SetHomeActivityScreen
             }
 
             destinationGraph.put(Destination.StartOnBoardingScreen, nextDestination)
-            isLoading = false
+            withContext(Dispatchers.Main) {
+                isLoading = false
+            }
         }
     }
 }

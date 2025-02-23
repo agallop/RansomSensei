@@ -5,7 +5,7 @@ import org.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.flow.Flow
 
 interface RansomSenseiDataRepository {
-    suspend fun getHomePackage() : String
+    fun getHomePackage() : Flow<String>
     suspend fun getLastInteraction() : Long
     suspend fun setLastInteraction(timestamp: Long)
     suspend fun getRandomActiveCard() : Card?

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import org.ransomsensei.data.RansomSenseiDataRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(val repository: RansomSenseiDataRepository) : ViewModel() {
@@ -15,7 +16,7 @@ class MainActivityViewModel(val repository: RansomSenseiDataRepository) : ViewMo
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            needToLaunchOnboardingActivity = repository.getHomePackage().isEmpty() ||
+            needToLaunchOnboardingActivity = repository.getHomePackage().first().isEmpty() ||
                     !repository.isDefaultHomeApp()
         }
     }
