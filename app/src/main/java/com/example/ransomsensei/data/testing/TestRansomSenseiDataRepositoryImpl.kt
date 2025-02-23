@@ -69,7 +69,7 @@ class TestRansomSenseiDataRepositoryImpl(val context: Context) : RansomSenseiDat
     }
 
     override fun getAllCardSetsFlow(): Flow<List<CardSet>> {
-        return cardSetDao.getAllFlow();
+        return cardSetDao.getAllFlow()
     }
 
     override fun getCardsInSetFlow(cardSetId: Int): Flow<List<Card>> {
@@ -78,5 +78,9 @@ class TestRansomSenseiDataRepositoryImpl(val context: Context) : RansomSenseiDat
 
     override suspend fun deleteCardSets(cardSets: List<CardSet>) {
         cardSetDao.deleteCardSets(cardSets)
+    }
+
+    override fun isDefaultHomeApp(): Boolean {
+        TODO("Not yet implemented")
     }
 }

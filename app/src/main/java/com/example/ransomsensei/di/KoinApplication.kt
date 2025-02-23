@@ -1,4 +1,4 @@
-package com.example.ransomsensei.koin
+package com.example.ransomsensei.di
 
 import android.app.Application
 import org.koin.android.ext.koin.androidContext

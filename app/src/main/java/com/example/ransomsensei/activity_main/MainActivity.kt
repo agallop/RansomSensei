@@ -35,8 +35,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val mainActivityViewModel = koinViewModel<MainActivityViewModel>()
 
-                LaunchedEffect(key1 = mainActivityViewModel.needToSetHomeActivity) {
-                    if (true) {
+                LaunchedEffect(key1 = mainActivityViewModel.needToLaunchOnboardingActivity) {
+                    if (mainActivityViewModel.needToLaunchOnboardingActivity) {
                         startOnboardingActivity()
                     }
                 }

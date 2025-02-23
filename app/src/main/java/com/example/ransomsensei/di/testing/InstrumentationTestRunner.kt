@@ -1,4 +1,4 @@
-package com.example.ransomsensei.koin.testing
+package com.example.ransomsensei.di.testing
 
 import android.app.Application
 import android.content.Context

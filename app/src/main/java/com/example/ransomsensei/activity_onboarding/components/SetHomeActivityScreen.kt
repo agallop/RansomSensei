@@ -7,8 +7,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavHostController
 import com.example.ransomsensei.activity_onboarding.util.HomeAppInfo
 import com.example.ransomsensei.activity_onboarding.viewmodels.SetHomeActivityViewModel
@@ -39,7 +42,7 @@ fun SetHomeActivityScreen(
 ) {
     SetHomeActivityScreen(viewModel.activities,
         viewModel.selectedPackageName,
-        onSelectPackageName = {it -> viewModel.selectedPackageName = it},
+        onSelectPackageName = { it -> viewModel.selectedPackageName = it },
         onSave = viewModel::saveHomePackage,
         navigateToNextScreen = {
             navHostController.navigate(viewModel.nextDestination)
@@ -56,20 +59,32 @@ fun SetHomeActivityScreen(
 ) {
     Scaffold { padding ->
         Column(
-            modifier = Modifier.padding(padding).fillMaxSize(),
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
 
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(24.dp)
             ) {
-                Text(
-                    text = "Welcome to Ransom Sensei. Please select your default launcher.",
-                    modifier = Modifier.width(240.dp)
-                )
+                Column {
+                    Text(
+                        text = "We need to determine which app is currently your home screen, " +
+                                "so we can be sure to send you to the right place.",
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "You'll likely only see one option, but just in case, this is " +
+                                "what we found on your device.",
+                        modifier = Modifier.width(240.dp)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
 
             for (homeAppInfo in homeAppInfos) {
@@ -79,7 +94,6 @@ fun SetHomeActivityScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth(fraction = 0.9f)
-                            .padding(12.dp)
                     ) {
                         RadioButton(
                             onClick = {
@@ -130,18 +144,20 @@ fun SetHomeActivityScreenPreview() {
                 HomeAppInfo(
                     packageName = "home.activity.1",
                     label = "Home Activity 1",
-                    icon = resources.getDrawable(
+                    icon = ResourcesCompat.getDrawable(
+                        resources,
                         R.drawable.ic_launcher_foreground,
                         resources.newTheme()
-                    )
+                    )!!
                 ),
                 HomeAppInfo(
                     packageName = "home.activity.2",
                     label = "Home Activity 2",
-                    icon = resources.getDrawable(
+                    icon = ResourcesCompat.getDrawable(
+                        resources,
                         R.drawable.ic_launcher_foreground,
                         resources.newTheme()
-                    )
+                    )!!
                 )
             ),
             selectedPackageName = "",

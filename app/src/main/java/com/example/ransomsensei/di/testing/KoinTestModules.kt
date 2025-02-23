@@ -1,4 +1,4 @@
-package com.example.ransomsensei.koin.testing
+package com.example.ransomsensei.di.testing
 
 import com.example.ransomsensei.data.RansomSenseiDataRepository
 import com.example.ransomsensei.data.testing.TestRansomSenseiDataRepositoryImpl

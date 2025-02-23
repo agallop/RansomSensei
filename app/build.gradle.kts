@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.truth)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.koin.test)
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.junit)

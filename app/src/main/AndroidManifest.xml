@@ -9,7 +9,7 @@
     </queries>
 
     <application
-        android:name=".koin.KoinApplication"
+        android:name=".di.KoinApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,11 +31,6 @@
         </activity>
         <activity
             android:name=".activity_onboarding.OnboardingActivity"
-            android:exported="true"
-            android:theme="@style/Theme.RansomSensei.NoActionBar" >
-        </activity>
-        <activity
-            android:name=".activity_onboarding.SetDefaultAppActivity"
             android:exported="true"
             android:theme="@style/Theme.RansomSensei.NoActionBar" >
         </activity>

@@ -10,12 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(val repository: RansomSenseiDataRepository) : ViewModel() {
-    var needToSetHomeActivity by mutableStateOf(false)
+    var needToLaunchOnboardingActivity by mutableStateOf(false)
         private set
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            needToSetHomeActivity = repository.getHomePackage().isEmpty()
+            needToLaunchOnboardingActivity = repository.getHomePackage().isEmpty() ||
+                    !repository.isDefaultHomeApp()
+            println(needToLaunchOnboardingActivity)
         }
     }
 }
