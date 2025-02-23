@@ -6,8 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ransomsensei.data.RansomSenseiDataRepository
-import com.example.ransomsensei.data.RansomSenseiDataStoreManager
-import com.example.ransomsensei.data.RansomSenseiDatabase
 import com.example.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
