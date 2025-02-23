@@ -77,13 +77,15 @@ private fun CardSetsScreen(
                 actions =
                 {
                     if (selectedCardSets.isEmpty()) {
-                        NoSelectedItemsNavigationBarActions(navigate = navigate)
+                        CardSetsDefaultNavigationBarActions(navigate = navigate)
                     } else SelectedItemsNavigationBarActions(
                         showDeleteConfirmation = showDeleteConfirmation,
                         hideDeleteConfirmation = hideDeleteConfirmation,
                         deleteSelectedCardSets = deleteSelectedCardSets,
                         deleteConfirmationShown = deleteConfirmationShown,
-                        selectedCardSets.size
+                        itemCount = selectedCardSets.size,
+                        singleItemLabel = "card set",
+                        multipleItemLabel = "card sets",
                     )
                 }
             )
@@ -171,37 +173,13 @@ fun CardSetCard(
 }
 
 @Composable
-fun NoSelectedItemsNavigationBarActions(navigate: (Destination) -> Unit) {
+fun CardSetsDefaultNavigationBarActions(navigate: (Destination) -> Unit) {
     IconButton(onClick = {
        navigate(Destination.AddEditCardSetScreen())
     }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
 }
 
-@Composable
-fun SelectedItemsNavigationBarActions(
-    showDeleteConfirmation: () -> Unit,
-    hideDeleteConfirmation: () -> Unit,
-    deleteSelectedCardSets: () -> Unit,
-    deleteConfirmationShown: Boolean,
-    cardCount: Int
-) {
-    IconButton(onClick = showDeleteConfirmation) {
-        Icon(
-            imageVector = Icons.Filled.Delete,
-            contentDescription = "Delete button"
-        )
-    }
-    when {
-        deleteConfirmationShown ->
-            DeleteItemsAlertDialog(
-                itemCount = cardCount,
-                singleItemLabel = "card set",
-                multipleItemLabel = "card sets",
-                onConfirmation = deleteSelectedCardSets,
-                onDismiss = hideDeleteConfirmation
-            )
-    }
-}
+
 
 
 @PreviewLightDark

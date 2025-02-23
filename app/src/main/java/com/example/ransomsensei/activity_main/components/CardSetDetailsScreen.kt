@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -29,13 +28,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.ransomsensei.data.entity.Card
 import com.example.ransomsensei.data.entity.CardSet
-import com.example.ransomsensei.theme.AppTheme
 import com.example.ransomsensei.activity_main.util.Destination
 import com.example.ransomsensei.activity_main.viewmodels.CardSetDetailsViewModel
+import com.example.ransomsensei.data.entity.Difficulty
+import com.example.ransomsensei.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,57 +44,92 @@ fun CardSetDetailsScreen(
     navHostController: NavHostController,
     viewModel: CardSetDetailsViewModel
 ) {
-    AppTheme {
-        val cards = viewModel.cards.collectAsState().value
+    CardSetDetailsScreen(
+        cards = viewModel.cards.collectAsState().value,
+        cardSet = viewModel.cardSet.collectAsState().value,
+        selectedCards = viewModel.selectedCards,
+        popBackStack = navHostController::popBackStack,
+        toggleCardSelection = viewModel::toggleCardSelection,
+        showDeleteConfirmation = viewModel::showDeleteConfirmation,
+        hideDeleteConfirmation = viewModel::hideDeleteConfirmation,
+        deleteSelectedCardSets = viewModel::deleteSelectedCards,
+        deleteConfirmationShown = viewModel.showDeleteConfirmation,
+        navigate = navHostController::navigate
+    )
 
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    title = {
-                        Text(viewModel.cardSet.collectAsState(CardSet.getDefaultInstance()).value.cardSetName)
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick =
-                            navHostController::popBackStack
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back button"
-                            )
-                        }
-                    },
-                    actions =
-                    {
-                        if (viewModel.selectedCards.isEmpty())
-                            NoSelectedItemsNavigationBarActions(
-                                viewModel.cardSetId,
-                                navHostController
-                            )
-                        else
-                            SelectedItemsNavigationBarActions(viewModel)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CardSetDetailsScreen(
+    cards: List<Card>,
+    cardSet: CardSet,
+    selectedCards: Set<Card>,
+    navigate: (Destination) -> Unit,
+    toggleCardSelection: (Card) -> Unit,
+    popBackStack: () -> Unit,
+    showDeleteConfirmation: () -> Unit,
+    hideDeleteConfirmation: () -> Unit,
+    deleteSelectedCardSets: () -> Unit,
+    deleteConfirmationShown: Boolean,
+) {
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text(cardSet.cardSetName)
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = popBackStack
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back button"
+                        )
                     }
-                )
-            }) { padding ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                verticalArrangement = Arrangement.Top
-            ) {
-                itemsIndexed(cards) { index, card ->
-                    CardItem(
-                        card = card,
-                        viewModel,
-                        navHostController
-                    )
+                },
+                actions =
+                {
+                    if (selectedCards.isEmpty())
+                        CardSetsDetailsDefaultNavigationBarActions(
+                            cardSetId = cardSet.cardSetId,
+                            navigate = navigate
+                        )
+                    else
+                        SelectedItemsNavigationBarActions(
+                            showDeleteConfirmation = showDeleteConfirmation,
+                            hideDeleteConfirmation = hideDeleteConfirmation,
+                            deleteSelectedCardSets = deleteSelectedCardSets,
+                            deleteConfirmationShown = deleteConfirmationShown,
+                            itemCount = selectedCards.size,
+                            singleItemLabel = "card",
+                            multipleItemLabel = "cards",
+                        )
                 }
+            )
+        }) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.Top
+        ) {
+            itemsIndexed(cards) { index, card ->
+                CardItem(
+                    card = card,
+                    selectedCards = selectedCards,
+                    toggleCardSelection = toggleCardSelection,
+                    navigate = navigate
+                )
             }
         }
+
     }
 }
 
@@ -101,9 +137,9 @@ fun CardSetDetailsScreen(
 @Composable
 fun CardItem(
     card: Card,
-    viewModel: CardSetDetailsViewModel,
-    navHostController: NavHostController
-
+    selectedCards: Set<Card>,
+    toggleCardSelection: (Card) -> Unit,
+    navigate: (Destination) -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
 
@@ -114,7 +150,7 @@ fun CardItem(
             .padding(4.dp)
             .combinedClickable(
                 onClick = {
-                    navHostController.navigate(
+                    navigate(
                         Destination.AddEditCardScreen(
                             cardSetId = card.cardSetId,
                             cardId = card.cardId
@@ -123,11 +159,11 @@ fun CardItem(
                 },
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    viewModel.toggleCardSelection(card)
+                    toggleCardSelection(card)
                 })
     ) {
         ListItem(
-            colors = if (viewModel.selectedCards.contains(card))
+            colors = if (selectedCards.contains(card))
                 ListItemDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
@@ -157,33 +193,50 @@ fun CardItem(
 }
 
 @Composable
-fun NoSelectedItemsNavigationBarActions(cardSetId: Int, navHostController: NavHostController) {
+fun CardSetsDetailsDefaultNavigationBarActions(
+    cardSetId: Int,
+    navigate: (Destination) -> Unit
+) {
     IconButton(onClick = {
-        navHostController.navigate(Destination.AddEditCardSetScreen(cardSetId = cardSetId))
+        navigate(Destination.AddEditCardSetScreen(cardSetId = cardSetId))
     }) { Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit button") }
 
     IconButton(onClick = {
-        navHostController.navigate(Destination.AddEditCardScreen(cardSetId = cardSetId))
+        navigate(Destination.AddEditCardScreen(cardSetId = cardSetId))
 
     }) { Icon(imageVector = Icons.Filled.Add, contentDescription = "Add button") }
 }
 
+@PreviewLightDark
 @Composable
-fun SelectedItemsNavigationBarActions(
-    viewModel: CardSetDetailsViewModel
-) {
-    IconButton(onClick = {
-        viewModel.showDeleteConfirmation()
-    }) { Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete button") }
-    when {
-        viewModel.showDeleteConfirmation ->
-            DeleteItemsAlertDialog(
-                itemCount = viewModel.selectedCards.size,
-                singleItemLabel = "card",
-                multipleItemLabel = "cards",
-                onConfirmation = viewModel::deleteSelectedCards,
-                onDismiss = viewModel::hideDeleteConfirmation
-            )
+fun CardSetDetailsScreenPreview() {
+    AppTheme {
+        CardSetDetailsScreen(
+            cards = listOf(
+                Card(
+                    kanjiValue = "日曜日",
+                    kanaValue = "にちようび",
+                    englishValue = "Sunday",
+                    difficulty = Difficulty.EASY,
+                ),
+                Card(
+                    kanjiValue = "月曜日",
+                    kanaValue = "げつようび",
+                    englishValue = "Monday",
+                    difficulty = Difficulty.EASY,
+                )
+            ),
+            cardSet = CardSet(
+                cardSetName = "Days of the Week"
+            ),
+            selectedCards = setOf(),
+            navigate = {},
+            toggleCardSelection = {},
+            popBackStack = {},
+            showDeleteConfirmation = {},
+            hideDeleteConfirmation = {},
+            deleteSelectedCardSets = {},
+            deleteConfirmationShown = false
+        )
     }
 }
-
