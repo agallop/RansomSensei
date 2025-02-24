@@ -14,4 +14,10 @@ interface RansomSenseiDataRepository {
     fun getCardsInSetFlow(cardSetId: Int) : Flow<List<Card>>
     suspend fun deleteCardSets(cardSets: List<CardSet>)
     fun isDefaultHomeApp() : Boolean
+    suspend fun getCardSet(cardSetId: Int) : CardSet?
+    suspend fun insertCardSet(cardSet: CardSet)
+    suspend fun getCard(cardId: Int) : Card?
+    suspend fun insertCard(card: Card)
+    suspend fun deleteCards(cards: List<Card>)
+    suspend fun saveHomePackage(packageName: String)
 }

@@ -18,7 +18,7 @@ class RansomSenseiDataStoreManagerTest {
     @Test
     fun writeHomeActivityTest() =
         runTest {
-            testDataStoreManager.saveHomeActivity("test_value")
-            assertEquals(testDataStoreManager.getHomeActivity().first(), "test_value")
+            testDataStoreManager.saveHomePackage("test_value")
+            assertEquals(testDataStoreManager.getHomePackage(), "test_value")
         }
 }

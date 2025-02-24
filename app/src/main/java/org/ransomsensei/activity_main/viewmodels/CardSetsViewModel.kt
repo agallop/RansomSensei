@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import org.ransomsensei.data.RansomSenseiDataRepository
 import org.ransomsensei.data.entity.CardSet
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CardSetsViewModel(
-    private val repository: RansomSenseiDataRepository
+    private val _repository: RansomSenseiDataRepository
 ) : ViewModel() {
     private val _cardSets = MutableStateFlow(emptyList<CardSet>())
     val cardSets = _cardSets.asStateFlow()
@@ -29,15 +29,15 @@ class CardSetsViewModel(
         private set
 
     fun loadCardSets() {
-        viewModelScope.launch {
-            repository.getAllCardSetsFlow().collect { cardSets ->
+        viewModelScope.launch(Dispatchers.IO) {
+            _repository.getAllCardSetsFlow().collect { cardSets ->
                 selectedCardSets = setOf()
                 _cardSets.update { cardSets }
             }
         }
 
-        viewModelScope.launch {
-            repository.getHomePackage().collect {
+        viewModelScope.launch(Dispatchers.IO) {
+            _repository.getHomePackage().collect {
                 needToSetHomeActivity = it.isEmpty()
             }
             isLoading = false
@@ -59,10 +59,12 @@ class CardSetsViewModel(
     }
 
     fun deleteSelectedCardSets() {
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.deleteCardSets(selectedCardSets.toList())
-            selectedCardSets = setOf()
-            showDeleteConfirmation = false
+        viewModelScope.launch(Dispatchers.IO) {
+            _repository.deleteCardSets(selectedCardSets.toList())
+            withContext(Dispatchers.Main) {
+                selectedCardSets = setOf()
+                showDeleteConfirmation = false
+            }
         }
     }
 }

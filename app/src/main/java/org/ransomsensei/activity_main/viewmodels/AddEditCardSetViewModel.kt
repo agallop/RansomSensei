@@ -5,47 +5,46 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import org.ransomsensei.data.RansomSenseiDatabase
 import org.ransomsensei.data.entity.CardSet
 import org.ransomsensei.data.entity.CardSetStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.ransomsensei.data.RansomSenseiDataRepository
 
-class AddEditCardSetViewModel
-    (val database: RansomSenseiDatabase) : ViewModel() {
-        var name by mutableStateOf("")
+class AddEditCardSetViewModel(private val _repository: RansomSenseiDataRepository) : ViewModel() {
+    var name by mutableStateOf("")
         private set
-        var status by mutableStateOf(CardSetStatus.UNKNOWN)
-        var isNew by mutableStateOf(true)
+    var status by mutableStateOf(CardSetStatus.UNKNOWN)
+    var isNew by mutableStateOf(true)
         private set
-        private var _existingCardSet: CardSet? = null
+    private var _existingCardSet: CardSet? = null
 
 
     fun loadCardSet(cardSetId: Int) {
-            viewModelScope.launch(Dispatchers.IO) {
-                _existingCardSet = database.cardSetDao().getCardSet(cardSetId)
-                if (_existingCardSet != null) {
-                    name = _existingCardSet?.cardSetName ?: ""
-                    status = _existingCardSet?.cardSetStatus ?: CardSetStatus.UNKNOWN
-                    isNew = false
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            _existingCardSet = _repository.getCardSet(cardSetId)
+            if (_existingCardSet != null) {
+                name = _existingCardSet?.cardSetName ?: ""
+                status = _existingCardSet?.cardSetStatus ?: CardSetStatus.UNKNOWN
+                isNew = false
             }
         }
+    }
 
-        suspend fun insertCardSet() {
-            database.cardSetDao().insertCardSet(
-                _existingCardSet?.copy(
-                    cardSetName = name,
-                    cardSetStatus = status
-                ) ?: CardSet(cardSetName = name, cardSetStatus = status)
-            )
-        }
+    suspend fun insertCardSet() {
+        _repository.insertCardSet(
+            _existingCardSet?.copy(
+                cardSetName = name,
+                cardSetStatus = status
+            ) ?: CardSet(cardSetName = name, cardSetStatus = status)
+        )
+    }
 
-        fun onNameChange(name: String) {
-            this.name = name
-        }
+    fun onNameChange(name: String) {
+        this.name = name
+    }
 
-        fun onStatusChange(status: CardSetStatus) {
-            this.status = status
-        }
+    fun onStatusChange(status: CardSetStatus) {
+        this.status = status
+    }
 }

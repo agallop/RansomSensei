@@ -64,29 +64,22 @@ class CardDaoTest {
             difficulty = Difficulty.EASY
         )
         val card2 = Card(
-            cardSetId = 1,
+            cardSetId = 2,
             cardId = 2,
             kanaValue = "たべます",
             kanjiValue = "食べます",
             englishValue = "to eat",
             difficulty = Difficulty.MEDIUM
         )
-        val card3 = Card(
-            cardSetId = 2,
-            cardId = 3,
-            kanaValue = "食べます",
-            kanjiValue = "たべます",
-            englishValue = "to eat",
-            difficulty = Difficulty.EASY
-        )
         cardSetDao.insertCardSet(cardSet1)
         cardSetDao.insertCardSet(cardSet2)
-        cardDao.insertCards(card1, card2, card3)
+
+        cardDao.insertCard(card1)
+        cardDao.insertCard(card2)
 
         val card = cardDao.getRandomActive()
 
-
-        assertThat(card).isIn(listOf(card1, card2, card3))
+        assertThat(card).isEqualTo(card1)
     }
 
     @Test
@@ -114,7 +107,8 @@ class CardDaoTest {
         )
 
         cardSetDao.insertCardSet(cardSet1)
-        cardDao.insertCards(card1, card2)
+        cardDao.insertCard(card1)
+        cardDao.insertCard(card2)
 
         val cards = cardDao.getCardsInSet(1)
 
@@ -154,7 +148,8 @@ class CardDaoTest {
             difficulty = Difficulty.MEDIUM
         )
 
-        cardDao.insertCards(card1, card2)
+        cardDao.insertCard(card1)
+        cardDao.insertCard(card2)
 
         cardsInSetFlow.test {
             val emission: List<Card> = awaitItem()

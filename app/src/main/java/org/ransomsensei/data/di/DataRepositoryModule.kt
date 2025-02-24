@@ -8,8 +8,12 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val dataRepositoryModule = module {
-    single { RansomSenseiDatabase.getInstance(androidContext()) }
-    single { RansomSenseiDataStoreManager(androidContext()) }
     single { androidContext().packageManager }
-    single<RansomSenseiDataRepository> { RansomSenseiDataRepositoryImpl(get(), get(), get()) }
+    single<RansomSenseiDataRepository> {
+        RansomSenseiDataRepositoryImpl(
+            _packageManager = get(),
+            database = RansomSenseiDatabase.createInstance(androidContext()),
+            _dataStoreManager = RansomSenseiDataStoreManager(androidContext())
+        )
+    }
 }

@@ -10,12 +10,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import org.ransomsensei.activity_onboarding.util.Destination
 import org.ransomsensei.activity_onboarding.util.HomeAppInfo
-import org.ransomsensei.data.RansomSenseiDataStoreManager
+import org.ransomsensei.data.RansomSenseiDataRepository
 
-class SetHomeActivityViewModel(packageManager: PackageManager, val ransomSenseiDataStoreManager: RansomSenseiDataStoreManager) : ViewModel() {
+class SetHomeActivityViewModel(
+    packageManager: PackageManager,
+    private val _repository: RansomSenseiDataRepository
+) : ViewModel() {
     var activities = mutableStateListOf<HomeAppInfo>()
     var selectedPackageName by mutableStateOf("")
-    var nextDestination : Destination = Destination.Finish
+    var nextDestination: Destination = Destination.Finish
 
 
     init {
@@ -44,6 +47,6 @@ class SetHomeActivityViewModel(packageManager: PackageManager, val ransomSenseiD
     }
 
     suspend fun saveHomePackage() {
-        ransomSenseiDataStoreManager.saveHomeActivity(selectedPackageName)
+        _repository.saveHomePackage(selectedPackageName)
     }
 }

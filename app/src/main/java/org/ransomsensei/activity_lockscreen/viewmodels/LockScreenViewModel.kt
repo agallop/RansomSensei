@@ -17,7 +17,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class LockScreenViewModel(
-    private val repository: RansomSenseiDataRepository
+    private val _repository: RansomSenseiDataRepository
 ) : ViewModel() {
     var isLoading by mutableStateOf(true)
         private set
@@ -46,9 +46,9 @@ class LockScreenViewModel(
     fun loadQuestion() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                card = repository.getRandomActiveCard()
-                homeActivityPackage = repository.getHomePackage().first()
-                lastInteraction = repository.getLastInteraction()
+                card = _repository.getRandomActiveCard()
+                homeActivityPackage = _repository.getHomePackage().first()
+                lastInteraction = _repository.getLastInteraction()
             }
 
             showQuestion = card != null
@@ -64,7 +64,7 @@ class LockScreenViewModel(
     fun updateLastInteraction() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                repository.setLastInteraction(System.currentTimeMillis())
+                _repository.setLastInteraction(System.currentTimeMillis())
             }
         }
     }

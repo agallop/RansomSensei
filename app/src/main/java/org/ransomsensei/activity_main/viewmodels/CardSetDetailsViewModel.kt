@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import org.ransomsensei.data.RansomSenseiDatabase
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.Dispatchers
@@ -13,13 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.ransomsensei.data.RansomSenseiDataRepository
 
 class CardSetDetailsViewModel(
-    private val database: RansomSenseiDatabase
+    private val _repository: RansomSenseiDataRepository,
 ) : ViewModel() {
-    val cardDao = database.cardDao()
-    val cardSetDao = database.cardSetDao()
-
     var cardSetId by mutableStateOf(0)
         private set
     private val _cardSet = MutableStateFlow(CardSet.getDefaultInstance())
@@ -34,13 +31,13 @@ class CardSetDetailsViewModel(
     fun loadCards(cardSetId: Int) {
         this.cardSetId = cardSetId
         viewModelScope.launch(Dispatchers.IO) {
-            cardSetDao.getCardSetFlow(cardSetId).collect { cardSet ->
+            _repository.getCardSetFlow(cardSetId).collect { cardSet ->
                 _cardSet.update { cardSet }
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            cardDao.getCardsInSetFlow(cardSetId).collect { cards ->
+            _repository.getCardsInSetFlow(cardSetId).collect { cards ->
                 _cards.update { cards }
             }
         }
@@ -62,7 +59,7 @@ class CardSetDetailsViewModel(
 
     fun deleteSelectedCards() {
         viewModelScope.launch(Dispatchers.IO) {
-            database.cardDao().deleteCards(selectedCards.toList())
+            _repository.deleteCards(selectedCards.toList())
             selectedCards = setOf()
             showDeleteConfirmation = false
         }

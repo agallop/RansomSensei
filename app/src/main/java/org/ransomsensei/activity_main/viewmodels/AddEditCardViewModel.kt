@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import org.ransomsensei.data.RansomSenseiDatabase
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.Difficulty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.ransomsensei.data.RansomSenseiDataRepository
 
-class AddEditCardViewModel(val ransoSenseiDatabase: RansomSenseiDatabase) : ViewModel() {
+class AddEditCardViewModel(private val _repository: RansomSenseiDataRepository) : ViewModel() {
     var englishValue by mutableStateOf<String>("")
         private set
     var kanaValue by mutableStateOf<String>("")
@@ -21,12 +21,11 @@ class AddEditCardViewModel(val ransoSenseiDatabase: RansomSenseiDatabase) : View
     var difficulty by mutableStateOf<Difficulty>(Difficulty.UNKNOWN)
         private set
     private var cardSetId by mutableStateOf<Int>(0)
-        private set
 
     private var _existingCard: Card? = null
     fun loadCard(cardId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _existingCard = ransoSenseiDatabase.cardDao().getCard(cardId)
+            _existingCard = _repository.getCard(cardId)
             englishValue = _existingCard?.englishValue ?: ""
             kanaValue = _existingCard?.kanaValue ?: ""
             kanjiValue = _existingCard?.kanjiValue ?: ""
@@ -60,7 +59,7 @@ class AddEditCardViewModel(val ransoSenseiDatabase: RansomSenseiDatabase) : View
     }
 
     suspend fun insertCard() {
-        ransoSenseiDatabase.cardDao().insertCards(
+        _repository.insertCard(
             _existingCard?.copy(
                 englishValue = englishValue, kanaValue = kanaValue,
                 kanjiValue = kanjiValue, difficulty = difficulty

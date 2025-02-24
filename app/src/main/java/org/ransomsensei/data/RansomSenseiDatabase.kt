@@ -11,11 +11,12 @@ import org.ransomsensei.data.dao.CardSetDao
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [CardSet::class, Card::class],
+@Database(
+    entities = [CardSet::class, Card::class],
     exportSchema = true,
-    version = 1)
+    version = 1
+)
 abstract class RansomSenseiDatabase : RoomDatabase() {
     abstract fun cardDao(): CardDao
 
@@ -24,60 +25,49 @@ abstract class RansomSenseiDatabase : RoomDatabase() {
     companion object {
         private const val DATABASE_NAME = "ransomSensei"
 
-        @Volatile
-        private var INSTANCE: RansomSenseiDatabase? = null
-
         @OptIn(InternalCoroutinesApi::class)
-        fun getInstance(context: Context): RansomSenseiDatabase {
+        fun createInstance(context: Context): RansomSenseiDatabase {
 
-            synchronized(this) {
-                var instance = INSTANCE
+            return Room.databaseBuilder(
+                context.applicationContext,
+                RansomSenseiDatabase::class.java,
+                DATABASE_NAME
+            )
+                .addCallback(object : Callback() {
 
-                if (instance == null) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        RansomSenseiDatabase::class.java,
-                        DATABASE_NAME
-                    )
-                        .addCallback(object : Callback() {
+                    override fun onOpen(db: SupportSQLiteDatabase) {
+                        super.onOpen(db)
+                        db.execSQL(
+                            """
+                                CREATE TEMP TRIGGER IF NOT EXISTS increase_card_set_count AFTER INSERT ON Card
+                                BEGIN
+                                    UPDATE CardSet
+                                    SET card_count = (
+                                        SELECT COUNT(*)
+                                        FROM Card
+                                        WHERE card_set_id = NEW.card_set_id)
+                                        WHERE card_set_id = NEW.card_set_id;
+                                END;
+                            """.trimIndent()
+                        )
 
-                            override fun onOpen(db: SupportSQLiteDatabase) {
-                                super.onOpen(db)
-                                db.execSQL(
-                                    """
-                                        CREATE TEMP TRIGGER IF NOT EXISTS increase_card_set_count AFTER INSERT ON Card
-                                        BEGIN
-                                            UPDATE CardSet
-                                            SET card_count = (
-                                                SELECT COUNT(*)
-                                                FROM Card
-                                                WHERE card_set_id = NEW.card_set_id)
-                                                WHERE card_set_id = NEW.card_set_id;
-                                        END;
-                                    """.trimIndent()
-                                )
-
-                                db.execSQL(
-                                    """
-                                        CREATE TEMP TRIGGER IF NOT EXISTS decrease_card_set_count AFTER DELETE ON Card
-                                        BEGIN
-                                            UPDATE CardSet
+                        db.execSQL(
+                            """
+                                CREATE TEMP TRIGGER IF NOT EXISTS decrease_card_set_count AFTER DELETE ON Card
+                                    BEGIN
+                                        UPDATE CardSet
                                             SET card_count = (
                                                 SELECT COUNT(*)
                                                 FROM Card
                                                 WHERE card_set_id = OLD.card_set_id)
                                                 WHERE card_set_id = OLD.card_set_id;
-                                        END;
-                                    """.trimIndent()
-                                )
-                            }
-                        })
-                        .build()
-
-                    INSTANCE = instance
-                }
-                return instance
-            }
+                                END;
+                            """.trimIndent()
+                        )
+                    }
+                })
+                .build()
         }
     }
 }
+

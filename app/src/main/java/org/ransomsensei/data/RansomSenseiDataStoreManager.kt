@@ -14,56 +14,53 @@ const val SETTINGS_DATABASE = "settings"
 
 val Context.preferenceDataStore: DataStore<Preferences> by preferencesDataStore(name = SETTINGS_DATABASE)
 
-class RansomSenseiDataStoreManager(val context: Context){
+class RansomSenseiDataStoreManager(context: Context) {
+    private val _dataStore = context.preferenceDataStore
 
-    val HOME_ACTIVITY = stringPreferencesKey("HOME")
-    val LAST_INTERACTION = stringPreferencesKey("LAST_INTERACTION")
-    val FREQUENCY_CAP_MILLIS = stringPreferencesKey("FREQUENCY_CAP_MILLIS")
+    companion object {
+        private val _HOME_ACTIVITY = stringPreferencesKey("HOME")
+        private val _LAST_INTERACTION = stringPreferencesKey("LAST_INTERACTION")
+        private val _FREQUENCY_CAP_MILLIS = stringPreferencesKey("FREQUENCY_CAP_MILLIS")
+    }
 
-    suspend fun saveHomeActivity(home: String) {
-        context.preferenceDataStore.edit {
-            settings ->
-            settings[HOME_ACTIVITY] = home
+    suspend fun saveHomePackage(home: String) {
+        _dataStore.edit { settings ->
+            settings[_HOME_ACTIVITY] = home
         }
     }
 
-     fun getHomeActivity() : Flow<String> {
-        return context.preferenceDataStore.data.map {
-            preferences ->
-            preferences[HOME_ACTIVITY] ?: ""
+    fun getHomePackage(): Flow<String> {
+        return _dataStore.data.map { preferences ->
+            preferences[_HOME_ACTIVITY] ?: ""
         }
     }
 
     suspend fun setLastInteraction(timestamp: Long) {
-        context.preferenceDataStore.edit {
-                settings ->
-            settings[LAST_INTERACTION] = timestamp.toString()
+        _dataStore.edit { settings ->
+            settings[_LAST_INTERACTION] = timestamp.toString()
         }
     }
 
-    suspend fun getLastInteraction() : Long {
-        return context.preferenceDataStore.data.map {
-                preferences ->
-            (preferences[LAST_INTERACTION] ?: "0").toLong()
+    suspend fun getLastInteraction(): Long {
+        return _dataStore.data.map { preferences ->
+            (preferences[_LAST_INTERACTION] ?: "0").toLong()
         }.first()
     }
 
     suspend fun setFrequencyCapMillis(millis: Long) {
-        context.preferenceDataStore.edit {
-                settings ->
-            settings[FREQUENCY_CAP_MILLIS] = millis.toString()
+        _dataStore.edit { settings ->
+            settings[_FREQUENCY_CAP_MILLIS] = millis.toString()
         }
     }
 
-    fun getFrequencyCapMillis() : Flow<Long> {
-        return context.preferenceDataStore.data.map {
-                preferences ->
-            (preferences[FREQUENCY_CAP_MILLIS] ?: "0").toLong()
+    fun getFrequencyCapMillis(): Flow<Long> {
+        return _dataStore.data.map { preferences ->
+            (preferences[_FREQUENCY_CAP_MILLIS] ?: "0").toLong()
         }
     }
 
     suspend fun clearData() {
-        context.preferenceDataStore.edit {
+        _dataStore.edit {
             it.clear()
         }
     }

@@ -15,75 +15,95 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 /** Test implementation of [RansomSenseiDataRepository] */
-class TestRansomSenseiDataRepositoryImpl(val context: Context) : RansomSenseiDataRepository {
-    val db = Room.inMemoryDatabaseBuilder(
+class TestRansomSenseiDataRepositoryImpl(context: Context) : RansomSenseiDataRepository {
+    private val _db = Room.inMemoryDatabaseBuilder(
         context, RansomSenseiDatabase::class.java
     ).build()
-
-    val cardDao = db.cardDao()
-    val cardSetDao = db.cardSetDao()
-    private var lastInteraction = 0L
+    private val _cardDao = _db.cardDao()
+    private val _cardSetDao = _db.cardSetDao()
+    private var _lastInteraction = 0L
+    private var _homePackage = "org.ransomsensei"
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            populate()
+            val cardSet = CardSet(
+                cardSetId = 1,
+                cardSetName = "Test Set",
+                cardSetStatus = CardSetStatus.ENABLED
+            )
+            _cardSetDao.insertCardSet(cardSet)
+
+            val card = Card(
+                cardId = 1,
+                cardSetId = 1,
+                kanjiValue = "日本語",
+                kanaValue = "にほんご",
+                englishValue = "Japanese",
+                difficulty = Difficulty.EASY
+            )
+            _cardDao.insertCard(card)
         }
-    }
-
-    private suspend fun populate() {
-        val cardSet = CardSet(
-            cardSetId = 1,
-            cardSetName = "Test Set",
-            cardSetStatus = CardSetStatus.ENABLED
-        )
-        cardSetDao.insertCardSet(cardSet)
-
-        val card = Card(
-            cardId = 1,
-            cardSetId = 1,
-            kanjiValue = "日本語",
-            kanaValue = "にほんご",
-            englishValue = "Japanese",
-            difficulty = Difficulty.EASY
-        )
-        cardDao.insertCards(card)
     }
 
     override fun getHomePackage(): Flow<String> {
         return flow {
-            emit("org.ransomsensei")
+            emit(_homePackage)
         }
     }
 
     override suspend fun getLastInteraction(): Long {
-        return lastInteraction
+        return _lastInteraction
     }
 
     override suspend fun setLastInteraction(timestamp: Long) {
-        lastInteraction = timestamp
+        _lastInteraction = timestamp
     }
 
     override suspend fun getRandomActiveCard(): Card? {
-        return cardDao.getRandomActive()
+        return _cardDao.getRandomActive()
     }
 
     override fun getCardSetFlow(cardSetId: Int): Flow<CardSet> {
-        return cardSetDao.getCardSetFlow(cardSetId)
+        return _cardSetDao.getCardSetFlow(cardSetId)
     }
 
     override fun getAllCardSetsFlow(): Flow<List<CardSet>> {
-        return cardSetDao.getAllFlow()
+        return _cardSetDao.getAllFlow()
     }
 
     override fun getCardsInSetFlow(cardSetId: Int): Flow<List<Card>> {
-        return cardDao.getCardsInSetFlow(cardSetId)
+        return _cardDao.getCardsInSetFlow(cardSetId)
     }
 
     override suspend fun deleteCardSets(cardSets: List<CardSet>) {
-        cardSetDao.deleteCardSets(cardSets)
+        _cardSetDao.deleteCardSets(cardSets)
     }
 
     override fun isDefaultHomeApp(): Boolean {
         return true
+    }
+
+    override suspend fun getCardSet(cardSetId: Int): CardSet? {
+        return _cardSetDao.getCardSet(cardSetId)
+    }
+
+    override suspend fun insertCardSet(cardSet: CardSet) {
+        return _cardSetDao.insertCardSet(cardSet)
+    }
+
+    override suspend fun getCard(cardId: Int): Card? {
+        return _cardDao.getCard(cardId)
+    }
+
+    override suspend fun insertCard(card: Card) {
+        return _cardDao.insertCard(card)
+    }
+
+    override suspend fun deleteCards(cards: List<Card>) {
+        return _cardDao.deleteCards(cards)
+    }
+
+    override suspend fun saveHomePackage(packageName: String) {
+        _homePackage = packageName
     }
 }

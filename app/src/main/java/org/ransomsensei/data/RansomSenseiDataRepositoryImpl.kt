@@ -7,49 +7,73 @@ import org.ransomsensei.data.entity.CardSet
 import kotlinx.coroutines.flow.Flow
 
 class RansomSenseiDataRepositoryImpl(
-    val packageManager: PackageManager,
     database: RansomSenseiDatabase,
-    val dataStoreManager: RansomSenseiDataStoreManager
+    private val _packageManager: PackageManager,
+    private val _dataStoreManager: RansomSenseiDataStoreManager
 ) : RansomSenseiDataRepository {
-    val cardDao = database.cardDao()
-    val cardSetDao = database.cardSetDao()
+    private val _cardDao = database.cardDao()
+    private val _cardSetDao = database.cardSetDao()
 
     override suspend fun getRandomActiveCard(): Card? {
-        return cardDao.getRandomActive()
+        return _cardDao.getRandomActive()
     }
 
     override fun getCardSetFlow(cardSetId: Int): Flow<CardSet> {
-        return cardSetDao.getCardSetFlow(cardSetId)
+        return _cardSetDao.getCardSetFlow(cardSetId)
     }
 
     override fun getAllCardSetsFlow(): Flow<List<CardSet>> {
-        return cardSetDao.getAllFlow()
+        return _cardSetDao.getAllFlow()
     }
 
     override fun getCardsInSetFlow(cardSetId: Int): Flow<List<Card>> {
-        return cardDao.getCardsInSetFlow(cardSetId)
+        return _cardDao.getCardsInSetFlow(cardSetId)
     }
 
     override suspend fun deleteCardSets(cardSets: List<CardSet>) {
-        cardSetDao.deleteCardSets(cardSets)
+        _cardSetDao.deleteCardSets(cardSets)
     }
 
     override fun getHomePackage(): Flow<String> {
-        return dataStoreManager.getHomeActivity()
+        return _dataStoreManager.getHomePackage()
     }
 
     override suspend fun getLastInteraction(): Long {
-        return dataStoreManager.getLastInteraction()
+        return _dataStoreManager.getLastInteraction()
     }
 
     override suspend fun setLastInteraction(timestamp: Long) {
-        dataStoreManager.setLastInteraction(timestamp)
+        _dataStoreManager.setLastInteraction(timestamp)
     }
 
     override fun isDefaultHomeApp(): Boolean {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_HOME)
-        val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        val resolveInfo = _packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
         return (resolveInfo?.activityInfo?.packageName ?: "").contains("ransomsensei")
+    }
+
+    override suspend fun getCardSet(cardSetId: Int): CardSet? {
+        return _cardSetDao.getCardSet(cardSetId)
+    }
+
+    override suspend fun insertCardSet(cardSet: CardSet) {
+        _cardSetDao.insertCardSet(cardSet)
+    }
+
+    override suspend fun getCard(cardId: Int): Card? {
+        return _cardDao.getCard(cardId)
+    }
+
+    override suspend fun insertCard(card: Card) {
+        _cardDao.insertCard(card)
+    }
+
+    override suspend fun deleteCards(cards: List<Card>) {
+        _cardDao.deleteCards(cards)
+    }
+
+    override suspend fun saveHomePackage(packageName: String) {
+        _dataStoreManager.saveHomePackage(packageName)
     }
 }
