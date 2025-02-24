@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import org.ransomsensei.data.entity.Card
 import kotlinx.coroutines.flow.Flow
+import org.ransomsensei.data.entity.Card
 
 @Dao
 interface CardDao {

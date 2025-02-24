@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
 import org.ransomsensei.activity_onboarding.components.SetDefaultHomeAppScreen
 import org.ransomsensei.activity_onboarding.components.SetHomeActivityScreen
 import org.ransomsensei.activity_onboarding.components.StartOnBoardingScreen
@@ -25,7 +26,6 @@ import org.ransomsensei.activity_onboarding.viewmodels.SetDefaultHomeAppViewMode
 import org.ransomsensei.activity_onboarding.viewmodels.SetHomeActivityViewModel
 import org.ransomsensei.activity_onboarding.viewmodels.StartOnboardingViewModel
 import org.ransomsensei.theme.AppTheme
-import org.koin.androidx.compose.koinViewModel
 
 class OnboardingActivity : ComponentActivity() {
 

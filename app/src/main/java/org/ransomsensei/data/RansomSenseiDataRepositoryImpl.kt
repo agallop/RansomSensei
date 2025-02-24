@@ -2,9 +2,9 @@ package org.ransomsensei.data
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import kotlinx.coroutines.flow.Flow
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
-import kotlinx.coroutines.flow.Flow
 
 class RansomSenseiDataRepositoryImpl(
     database: RansomSenseiDatabase,

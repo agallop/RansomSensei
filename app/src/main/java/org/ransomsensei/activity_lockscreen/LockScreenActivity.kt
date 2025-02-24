@@ -36,11 +36,11 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import org.ransomsensei.theme.AppTheme
-import org.ransomsensei.activity_lockscreen.viewmodels.LockScreenViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.koinViewModel
+import org.ransomsensei.activity_lockscreen.viewmodels.LockScreenViewModel
+import org.ransomsensei.theme.AppTheme
 import kotlin.text.isNotEmpty
 
 class LockScreenActivity : ComponentActivity() {

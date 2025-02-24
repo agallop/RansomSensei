@@ -1,8 +1,8 @@
 package org.ransomsensei.data
 
+import kotlinx.coroutines.flow.Flow
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
-import kotlinx.coroutines.flow.Flow
 
 interface RansomSenseiDataRepository {
     fun getHomePackage() : Flow<String>

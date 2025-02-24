@@ -31,10 +31,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import org.ransomsensei.data.entity.Card
-import org.ransomsensei.data.entity.CardSet
 import org.ransomsensei.activity_main.util.Destination
 import org.ransomsensei.activity_main.viewmodels.CardSetDetailsViewModel
+import org.ransomsensei.data.entity.Card
+import org.ransomsensei.data.entity.CardSet
 import org.ransomsensei.data.entity.Difficulty
 import org.ransomsensei.theme.AppTheme
 

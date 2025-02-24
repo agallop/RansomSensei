@@ -3,11 +3,11 @@ package org.ransomsensei.activity_onboarding.viewmodels
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import org.ransomsensei.activity_onboarding.util.Destination
 import org.ransomsensei.activity_onboarding.util.HomeAppInfo
 import org.ransomsensei.data.RansomSenseiDataRepository

@@ -1,7 +1,5 @@
 package org.ransomsensei.activity_onboarding.components
 
-import org.ransomsensei.R
-
 import android.content.res.Resources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,14 +24,15 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavHostController
-import org.ransomsensei.activity_onboarding.util.HomeAppInfo
-import org.ransomsensei.activity_onboarding.viewmodels.SetHomeActivityViewModel
-import org.ransomsensei.theme.AppTheme
 import com.google.accompanist.drawablepainter.DrawablePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.ransomsensei.R
+import org.ransomsensei.activity_onboarding.util.HomeAppInfo
+import org.ransomsensei.activity_onboarding.viewmodels.SetHomeActivityViewModel
+import org.ransomsensei.theme.AppTheme
 
 @Composable
 fun SetHomeActivityScreen(

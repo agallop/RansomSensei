@@ -6,25 +6,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import org.ransomsensei.theme.AppTheme
-import org.ransomsensei.activity_onboarding.OnboardingActivity
+import org.koin.androidx.compose.koinViewModel
 import org.ransomsensei.activity_main.components.AddEditCardScreen
 import org.ransomsensei.activity_main.components.AddEditCardSetScreen
 import org.ransomsensei.activity_main.components.CardSetDetailsScreen
 import org.ransomsensei.activity_main.components.CardSetsScreen
 import org.ransomsensei.activity_main.util.Destination
-import org.ransomsensei.activity_main.viewmodels.AddEditCardViewModel
 import org.ransomsensei.activity_main.viewmodels.AddEditCardSetViewModel
+import org.ransomsensei.activity_main.viewmodels.AddEditCardViewModel
 import org.ransomsensei.activity_main.viewmodels.CardSetDetailsViewModel
 import org.ransomsensei.activity_main.viewmodels.CardSetsViewModel
 import org.ransomsensei.activity_main.viewmodels.MainActivityViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.ransomsensei.activity_onboarding.OnboardingActivity
+import org.ransomsensei.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
 

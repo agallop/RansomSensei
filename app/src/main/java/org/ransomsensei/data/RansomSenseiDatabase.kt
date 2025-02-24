@@ -5,12 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-
+import kotlinx.coroutines.InternalCoroutinesApi
 import org.ransomsensei.data.dao.CardDao
 import org.ransomsensei.data.dao.CardSetDao
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
-import kotlinx.coroutines.InternalCoroutinesApi
 
 @Database(
     entities = [CardSet::class, Card::class],
