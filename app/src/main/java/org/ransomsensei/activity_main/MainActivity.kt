@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,7 +43,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                NavHost(navController = navController, startDestination = Destination.CardSetsScreen) {
+                NavHost(navController = navController, startDestination = Destination.CardSetsScreen,
+                    enterTransition = { slideInVertically(initialOffsetY = {it})},
+                    ) {
                     composable<Destination.CardSetsScreen> {
                         val viewModel = koinViewModel<CardSetsViewModel>()
                         viewModel.loadCardSets()

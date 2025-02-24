@@ -61,8 +61,6 @@ fun SetDefaultHomeAppScreen(
                 verticalArrangement = Arrangement.Top,
                 modifier = Modifier.padding(24.dp)
             ) {
-
-
                 Text(
                     text = "Ransom Sensei needs to be set as your default home app to start " +
                             "quizzing you",
