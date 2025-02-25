@@ -145,7 +145,7 @@ fun AddEditCardScreen(
                     enabled = canSave,
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
-                            insertCard
+                            insertCard()
                             withContext(Dispatchers.Main) {
                                 popBackStack()
                             }

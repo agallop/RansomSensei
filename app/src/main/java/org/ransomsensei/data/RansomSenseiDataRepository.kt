@@ -16,6 +16,7 @@ interface RansomSenseiDataRepository {
     fun isDefaultHomeApp() : Boolean
     suspend fun getCardSet(cardSetId: Int) : CardSet?
     suspend fun insertCardSet(cardSet: CardSet)
+    suspend fun updateCardSet(cardSet: CardSet)
     suspend fun getCard(cardId: Int) : Card?
     suspend fun insertCard(card: Card)
     suspend fun deleteCards(cards: List<Card>)

@@ -31,13 +31,17 @@ class AddEditCardSetViewModel(private val _repository: RansomSenseiDataRepositor
         }
     }
 
-    suspend fun insertCardSet() {
-        _repository.insertCardSet(
-            _existingCardSet?.copy(
-                cardSetName = name,
-                cardSetStatus = status
-            ) ?: CardSet(cardSetName = name, cardSetStatus = status)
-        )
+    suspend fun insertOrUpdateCardSet() {
+        when(_existingCardSet) {
+            null -> _repository.insertCardSet(
+                CardSet(cardSetName = name, cardSetStatus = status)
+            )
+            else -> _repository.updateCardSet(
+                _existingCardSet!!.copy(
+                    cardSetName = name,
+                    cardSetStatus = status
+                ))
+        }
     }
 
     fun onNameChange(name: String) {

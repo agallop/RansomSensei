@@ -69,6 +69,10 @@ class RansomSenseiDataRepositoryImpl(
         _cardDao.insertCard(card)
     }
 
+    override suspend fun updateCardSet(cardSet: CardSet) {
+        _cardSetDao.updateCardSet(cardSet)
+    }
+
     override suspend fun deleteCards(cards: List<Card>) {
         _cardDao.deleteCards(cards)
     }

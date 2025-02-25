@@ -42,7 +42,7 @@ fun AddEditCardSetScreen(
         status = viewModel.status,
         onNameChange = viewModel::onNameChange,
         onStatusChange = viewModel::onStatusChange,
-        insertCardSet = viewModel::insertCardSet,
+        insertOrUpdateCardSet = viewModel::insertOrUpdateCardSet,
         popBackStack = navHostController::popBackStack
     )
 }
@@ -55,7 +55,7 @@ fun AddEditCardSetScreen(
     status: CardSetStatus,
     onNameChange: (String) -> Unit,
     onStatusChange: (CardSetStatus) -> Unit,
-    insertCardSet: suspend () -> Unit,
+    insertOrUpdateCardSet: suspend () -> Unit,
     popBackStack: () -> Unit
 ) {
     Scaffold(
@@ -110,7 +110,7 @@ fun AddEditCardSetScreen(
                             && status != CardSetStatus.UNKNOWN,
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
-                            insertCardSet()
+                            insertOrUpdateCardSet()
                             withContext(Dispatchers.Main) {
                                 popBackStack()
                             }
@@ -131,7 +131,7 @@ fun AddEditCardSetScreenPreview() {
             status = CardSetStatus.ENABLED,
             onNameChange = {},
             onStatusChange = {},
-            insertCardSet = {},
+            insertOrUpdateCardSet = {},
             popBackStack = {}
         )
     }

@@ -31,7 +31,7 @@ interface CardDao {
     fun getCardsInSetFlow(cardSetId: Int): Flow<List<Card>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCard(cards: Card)
+    suspend fun insertCard(card: Card)
 
     @Query("Select * FROM Card WHERE card_id = :cardId")
     suspend fun getCard(cardId: Int): Card?

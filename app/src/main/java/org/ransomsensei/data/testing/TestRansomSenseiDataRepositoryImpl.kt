@@ -91,6 +91,10 @@ class TestRansomSenseiDataRepositoryImpl(context: Context) : RansomSenseiDataRep
         return _cardSetDao.insertCardSet(cardSet)
     }
 
+    override suspend fun updateCardSet(cardSet: CardSet) {
+        return _cardSetDao.updateCardSet(cardSet)
+    }
+
     override suspend fun getCard(cardId: Int): Card? {
         return _cardDao.getCard(cardId)
     }
