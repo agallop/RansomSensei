@@ -11,17 +11,14 @@ import org.ransomsensei.data.entity.Card
 
 @Dao
 interface CardDao {
+
     @Query("""
-            WITH random_cardset AS (
-            Select * FROM CardSet
-            ORDER BY RANDOM()
-            limit 1)
-            SELECT * FROM Card
-            INNER JOIN random_cardset Using (card_set_id)
+            SELECT * FROM Card 
+            INNER JOIN CardSet Using (card_set_id)
+            WHERE card_set_status = 'ENABLED'
             ORDER BY RANDOM()
             limit 1
-        """
-        )
+            """)
     suspend fun getRandomActive(): Card?
 
     @Query("SELECT * FROM Card WHERE card_set_id = :cardSetId")
