@@ -23,6 +23,7 @@ class TestRansomSenseiDataRepositoryImpl(context: Context) : RansomSenseiDataRep
     private val _cardSetDao = _db.cardSetDao()
     private var _lastInteraction = 0L
     private var _homePackage = "org.ransomsensei"
+    private var _isInOnboarding = false
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -109,5 +110,13 @@ class TestRansomSenseiDataRepositoryImpl(context: Context) : RansomSenseiDataRep
 
     override suspend fun saveHomePackage(packageName: String) {
         _homePackage = packageName
+    }
+
+    override suspend fun setIsInOnboarding(onboarding: Boolean) {
+        _isInOnboarding = onboarding
+    }
+
+    override suspend fun getIsInOnboarding(): Boolean {
+        return _isInOnboarding
     }
 }

@@ -1,5 +1,6 @@
 package org.ransomsensei.activity_onboarding
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
+import org.ransomsensei.activity_main.MainActivity
+import org.ransomsensei.activity_onboarding.components.OnboardingCompleteScreen
 import org.ransomsensei.activity_onboarding.components.SetDefaultHomeAppScreen
 import org.ransomsensei.activity_onboarding.components.SetHomeActivityScreen
 import org.ransomsensei.activity_onboarding.components.StartOnBoardingScreen
@@ -51,7 +54,7 @@ class OnboardingActivity : ComponentActivity() {
                 } else {
                     NavHost(
                         navController = navHostController,
-                        startDestination = Destination.StartOnBoardingScreen
+                        startDestination = activityViewModel.startDestination
                     ) {
                         composable<Destination.StartOnBoardingScreen> {
                             val screenViewModel = koinViewModel<StartOnboardingViewModel>()
@@ -85,7 +88,14 @@ class OnboardingActivity : ComponentActivity() {
                                 viewModel = screenViewModel
                             )
                         }
+                        composable<Destination.OnboardingCompleteScreen> {
+                            OnboardingCompleteScreen(navHostController)
+                        }
                         composable<Destination.Finish> {
+                            activityViewModel.finishOnboarding()
+                            val intent = Intent(this@OnboardingActivity, MainActivity::class.java)
+                            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            startActivity(intent)
                             finish()
                         }
                     }

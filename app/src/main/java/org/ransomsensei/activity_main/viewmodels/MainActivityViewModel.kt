@@ -15,9 +15,18 @@ class MainActivityViewModel(private val _repository: RansomSenseiDataRepository)
         private set
 
     init {
+        checkOnboardingStatus()
+    }
+
+    fun onActivityResume() {
+        needToLaunchOnboardingActivity = false
+        checkOnboardingStatus()
+    }
+
+    private fun checkOnboardingStatus() {
         viewModelScope.launch(Dispatchers.IO) {
             needToLaunchOnboardingActivity = _repository.getHomePackage().first().isEmpty() ||
-                    !_repository.isDefaultHomeApp()
+                    !_repository.isDefaultHomeApp() || _repository.getIsInOnboarding()
         }
     }
 }

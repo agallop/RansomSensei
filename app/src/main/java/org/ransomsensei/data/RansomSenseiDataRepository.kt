@@ -21,4 +21,6 @@ interface RansomSenseiDataRepository {
     suspend fun insertCard(card: Card)
     suspend fun deleteCards(cards: List<Card>)
     suspend fun saveHomePackage(packageName: String)
+    suspend fun setIsInOnboarding(onboarding: Boolean)
+    suspend fun getIsInOnboarding(): Boolean
 }

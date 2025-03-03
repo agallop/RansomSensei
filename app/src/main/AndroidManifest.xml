@@ -36,7 +36,7 @@
         </activity>
         <activity
             android:exported="true"
-            android:name=".activity_lockscreen.LockScreenActivity"
+            android:name=".activity_lockscreen.HomeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

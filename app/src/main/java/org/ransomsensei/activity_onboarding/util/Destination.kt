@@ -7,6 +7,8 @@ sealed class Destination {
     @Serializable object StartOnBoardingScreen : Destination()
     @Serializable object SetHomeActivityScreen : Destination()
     @Serializable object SetDefaultHomeAppScreen : Destination()
+    @Serializable object OnboardingCompleteScreen : Destination()
     @Serializable object Finish : Destination()
+
 }
 

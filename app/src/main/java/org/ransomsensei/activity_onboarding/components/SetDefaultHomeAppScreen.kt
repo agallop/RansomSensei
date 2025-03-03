@@ -3,6 +3,7 @@ package org.ransomsensei.activity_onboarding.components
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Context.ROLE_SERVICE
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -105,6 +106,7 @@ fun setDefault(context: Context) {
     val defaultAppIntent =
         (context.getSystemService(ROLE_SERVICE) as RoleManager)
             .createRequestRoleIntent(RoleManager.ROLE_HOME)
+    defaultAppIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
     (context as ComponentActivity).startActivityForResult(defaultAppIntent, 1)
 }
 

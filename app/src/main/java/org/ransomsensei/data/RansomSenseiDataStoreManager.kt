@@ -3,6 +3,7 @@ package org.ransomsensei.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -21,6 +22,7 @@ class RansomSenseiDataStoreManager(context: Context) {
         private val _HOME_ACTIVITY = stringPreferencesKey("HOME")
         private val _LAST_INTERACTION = stringPreferencesKey("LAST_INTERACTION")
         private val _FREQUENCY_CAP_MILLIS = stringPreferencesKey("FREQUENCY_CAP_MILLIS")
+        private val _IS_IN_BOARDING = booleanPreferencesKey("ON_BOARDING_FINISHED")
     }
 
     suspend fun saveHomePackage(home: String) {
@@ -45,6 +47,18 @@ class RansomSenseiDataStoreManager(context: Context) {
         return _dataStore.data.map { preferences ->
             (preferences[_LAST_INTERACTION] ?: "0").toLong()
         }.first()
+    }
+
+    suspend fun setIsInOnboarding(finished: Boolean) {
+        _dataStore.edit { settings ->
+            settings[_IS_IN_BOARDING] = finished
+        }
+    }
+
+    fun getIsInOnboarding(): Flow<Boolean> {
+        return _dataStore.data.map { preferences ->
+            preferences[_IS_IN_BOARDING] == true
+        }
     }
 
     suspend fun setFrequencyCapMillis(millis: Long) {

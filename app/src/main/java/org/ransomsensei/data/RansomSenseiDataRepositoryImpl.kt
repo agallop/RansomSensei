@@ -3,6 +3,7 @@ package org.ransomsensei.data
 import android.content.Intent
 import android.content.pm.PackageManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
 
@@ -79,5 +80,13 @@ class RansomSenseiDataRepositoryImpl(
 
     override suspend fun saveHomePackage(packageName: String) {
         _dataStoreManager.saveHomePackage(packageName)
+    }
+
+    override suspend fun setIsInOnboarding(onboarding: Boolean) {
+        _dataStoreManager.setIsInOnboarding(onboarding)
+    }
+
+    override suspend fun getIsInOnboarding(): Boolean {
+        return _dataStoreManager.getIsInOnboarding().first()
     }
 }

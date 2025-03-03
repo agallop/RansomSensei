@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -37,6 +48,8 @@ import org.ransomsensei.data.entity.Card
 import org.ransomsensei.data.entity.CardSet
 import org.ransomsensei.data.entity.Difficulty
 import org.ransomsensei.theme.AppTheme
+import org.ransomsensei.theme.provider
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,15 +184,30 @@ fun CardItem(
                 ListItemDefaults.colors(),
             overlineContent = {
                 Text(
-                    text = card.kanaValue,
+                    text = AnnotatedString(
+                        card.kanaValue,
+                        spanStyle = SpanStyle(
+                            localeList = LocaleList("ja")
+                        ),
+                        paragraphStyle = ParagraphStyle(
+                            lineBreak = LineBreak.Heading
+                        )
+                    ),
                     style = MaterialTheme.typography.bodySmall
                 )
 
             },
             headlineContent = {
                 Text(
-                    text = card.kanjiValue,
-                    style = MaterialTheme.typography.bodyLarge
+                    text = AnnotatedString(
+                        card.kanjiValue,
+                        spanStyle = SpanStyle(
+                            localeList = LocaleList("ja")
+                        ),
+                        paragraphStyle = ParagraphStyle(
+                            lineBreak = LineBreak.Heading
+                        )
+                    ),
                 )
             },
             supportingContent = {

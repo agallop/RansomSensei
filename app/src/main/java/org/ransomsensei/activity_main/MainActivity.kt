@@ -27,6 +27,8 @@ import org.ransomsensei.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
 
+    private var mainActivityViewModel: MainActivityViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -34,10 +36,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 val navController = rememberNavController()
-                val mainActivityViewModel = koinViewModel<MainActivityViewModel>()
+                mainActivityViewModel = koinViewModel<MainActivityViewModel>()
 
-                LaunchedEffect(key1 = mainActivityViewModel.needToLaunchOnboardingActivity) {
-                    if (mainActivityViewModel.needToLaunchOnboardingActivity) {
+                LaunchedEffect(key1 = mainActivityViewModel!!.needToLaunchOnboardingActivity) {
+                    if (mainActivityViewModel!!.needToLaunchOnboardingActivity) {
                         startOnboardingActivity()
                     }
                 }
@@ -73,14 +75,21 @@ class MainActivity : ComponentActivity() {
                         }
                         AddEditCardScreen(navController, addEditCardViewModel)
                     }
-
                 }
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (mainActivityViewModel != null) {
+            mainActivityViewModel!!.onActivityResume()
+        }
+    }
+
     private fun startOnboardingActivity() {
         val intent = Intent(this, OnboardingActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 }

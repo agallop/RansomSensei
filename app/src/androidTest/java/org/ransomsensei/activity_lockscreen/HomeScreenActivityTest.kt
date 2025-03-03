@@ -14,10 +14,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-/** Compose Ui test for [LockScreenActivity] */
-class LockScreenActivityTest {
+/** Compose Ui test for [HomeActivity] */
+class HomeScreenActivityTest {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<LockScreenActivity>()
+    val composeTestRule = createAndroidComposeRule<HomeActivity>()
 
     @Before
     fun waitForAnimation() {
