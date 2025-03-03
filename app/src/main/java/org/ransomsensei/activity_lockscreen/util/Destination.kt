@@ -6,5 +6,6 @@ sealed class Destination {
     @Serializable object ReturnToOnboardingScreen : Destination()
     @Serializable object Onboarding : Destination()
     @Serializable object LockScreen : Destination()
+    @Serializable object Main: Destination()
     @Serializable data class Finish(val homePackage: String) : Destination()
 }

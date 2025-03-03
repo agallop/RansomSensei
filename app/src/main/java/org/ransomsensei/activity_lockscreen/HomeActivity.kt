@@ -19,6 +19,7 @@ import org.ransomsensei.activity_lockscreen.components.ReturnToOnboardingScreen
 import org.ransomsensei.activity_lockscreen.util.Destination
 import org.ransomsensei.activity_lockscreen.viewmodels.HomeActivityViewModel
 import org.ransomsensei.activity_lockscreen.viewmodels.LockScreenViewModel
+import org.ransomsensei.activity_main.MainActivity
 import org.ransomsensei.activity_onboarding.OnboardingActivity
 import kotlin.text.isNotEmpty
 
@@ -53,6 +54,9 @@ class HomeActivity : ComponentActivity() {
                     composable<Destination.Onboarding> {
                         returnToOnboarding()
                     }
+                    composable<Destination.Main> {
+                        goToMainActivity()
+                    }
                     composable<Destination.Finish> {
                         val args = it.toRoute<Destination.Finish>()
                         continueToHomeApp(args.homePackage)
@@ -60,6 +64,13 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    fun goToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        startActivity(intent)
+        finish()
     }
 
     fun returnToOnboarding() {

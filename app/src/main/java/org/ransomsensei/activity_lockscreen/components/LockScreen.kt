@@ -93,19 +93,29 @@ fun LockScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                Icons.Filled.Lock,
-                contentDescription = "Lock",
-                Modifier
-                    .padding(vertical = 16.dp)
-                    .size(64.dp)
-            )
+            AnimatedVisibility(
+                modifier = Modifier.testTag("AnimatedVisibility"),
+                visible = isLoading || showQuestion
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Lock,
+                        contentDescription = "Lock",
+                        Modifier
+                            .padding(vertical = 16.dp)
+                            .size(64.dp)
+                    )
 
-            Row {
-                Text(
-                    text = "Translate to gain entry",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                    Row {
+                        Text(
+                            text = "Translate to gain entry",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                }
             }
             AnimatedVisibility(
                 modifier = Modifier.testTag("AnimatedVisibility"),
@@ -185,9 +195,22 @@ fun LockScreen(
                             }
                         }
                     } else {
-                        Button(content = { Text("Proceed") }, onClick = {
+                        Card(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .width(225.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(10.dp),
+                                text = "No available terms found. Create some, or proceed with using your phone"
+                            )
+                        }
+                        Button(onClick = {
+                            navigate(Destination.Main)
+                        }) { Text("Edit your card sets") }
+                        Button(onClick = {
                             onSkip(homeActivityPackage, navigate)
-                        })
+                        }) { Text("Proceed to home screen") }
                     }
                 }
             }
@@ -209,13 +232,32 @@ private fun onSkip(homeActivityPackage: String, navigate: (Destination) -> Unit)
 }
 
 
-
 @PreviewLightDark
 @Composable
 fun LockScreenPreview() {
     AppTheme {
         LockScreen(isLoading = false,
             showQuestion = true,
+            kanaValue = "にちようび",
+            kanjiValue = "日曜日",
+            englishValue = "sunday",
+            currentAnswer = "Sunday",
+            onCurrentAnswerChange = {},
+            loadQuestion = {},
+            updateLastInteraction = {},
+            homeActivityPackage = "",
+            allowSkip = true,
+            currentCountDown = flow { },
+            navigate = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun LockScreenPreview_NoQuestion() {
+    AppTheme {
+        LockScreen(isLoading = false,
+            showQuestion = false,
             kanaValue = "にちようび",
             kanjiValue = "日曜日",
             englishValue = "sunday",

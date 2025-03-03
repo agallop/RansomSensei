@@ -108,6 +108,7 @@ fun setDefault(context: Context) {
             .createRequestRoleIntent(RoleManager.ROLE_HOME)
     defaultAppIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
     (context as ComponentActivity).startActivityForResult(defaultAppIntent, 1)
+    context.finish()
 }
 
 @PreviewLightDark

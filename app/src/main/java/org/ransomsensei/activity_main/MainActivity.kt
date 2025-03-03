@@ -91,5 +91,6 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, OnboardingActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
+        finish()
     }
 }
