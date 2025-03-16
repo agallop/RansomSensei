@@ -15,14 +15,18 @@
  */
 package org.ransomsensei.activity_lockscreen.di
 
+import android.annotation.SuppressLint
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.ransomsensei.activity_lockscreen.viewmodels.HomeActivityViewModel
 import org.ransomsensei.activity_lockscreen.viewmodels.LockScreenViewModel
 import org.ransomsensei.data.di.dataRepositoryModule
+import java.util.Date
 
+@SuppressLint("DirectDateInstantiation")
 val lockScreenActivityModule = module {
     dataRepositoryModule
+    single { Date() }
     viewModel { HomeActivityViewModel(get()) }
-    viewModel { LockScreenViewModel(get()) }
+    viewModel { LockScreenViewModel(get(), Date()) }
 }

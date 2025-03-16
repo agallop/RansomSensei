@@ -28,11 +28,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ransomsensei.data.RansomSenseiDataRepository
 import org.ransomsensei.data.entity.Card
+import java.util.Date
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class LockScreenViewModel(
-    private val _repository: RansomSenseiDataRepository
+    private val _repository: RansomSenseiDataRepository,
+    private val _date: Date
 ) : ViewModel() {
     var isLoading by mutableStateOf(true)
         private set
@@ -79,7 +81,7 @@ class LockScreenViewModel(
     fun updateLastInteraction() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _repository.setLastInteraction(System.currentTimeMillis())
+                _repository.setLastInteraction(_date.time)
             }
         }
     }
