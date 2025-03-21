@@ -5,9 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.androidx.room)
     id("com.google.devtools.ksp")
-
 }
-
 
 
 android {
@@ -127,4 +125,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.androidx.google.fonts)
+
+    testImplementation(libs.kotlinx.coroutines.test)
 }

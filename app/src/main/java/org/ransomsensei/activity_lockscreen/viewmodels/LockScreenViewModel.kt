@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -34,7 +35,8 @@ import kotlin.time.toDuration
 
 class LockScreenViewModel(
     private val _repository: RansomSenseiDataRepository,
-    private val _date: Date
+    private val _date: Date,
+    private val _ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
     var isLoading by mutableStateOf(true)
         private set
@@ -62,7 +64,7 @@ class LockScreenViewModel(
 
     fun loadQuestion() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(_ioDispatcher) {
                 card = _repository.getRandomActiveCard()
                 homeActivityPackage = _repository.getHomePackage().first()
                 lastInteraction = _repository.getLastInteraction()
@@ -80,7 +82,7 @@ class LockScreenViewModel(
 
     fun updateLastInteraction() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(_ioDispatcher) {
                 _repository.setLastInteraction(_date.time)
             }
         }
