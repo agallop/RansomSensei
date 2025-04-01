@@ -5,10 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.androidx.room)
     id("com.google.devtools.ksp")
-
 }
-
-
 
 android {
     namespace = "org.ransomsensei"
@@ -26,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -127,4 +124,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(libs.androidx.google.fonts)
+
+    testImplementation(libs.kotlinx.coroutines.test)
 }
