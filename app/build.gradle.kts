@@ -7,7 +7,6 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-
 android {
     namespace = "org.ransomsensei"
     compileSdk = 35
@@ -24,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

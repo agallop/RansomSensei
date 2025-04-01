@@ -1,0 +1,67 @@
+on:
+  push:
+    branches: [release]
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'gradle'
+
+      - name: Grant execute permissions for gradlew
+        run: chmod +x gradlew
+
+      - name: Run unit tests
+        run: ./gradlew clean testReleaseUnitTest
+
+  distribute:
+    name: Distribute Bundle to Google Play
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'gradle'
+
+      - name: Version bump
+        uses: chkfung/android-version-action@v1.2.3
+        with:
+          gradlePath: app/build.gradle.kts
+          versionCode: {{ github.run_number }}}}
+
+      - name: Assemble Release Bundle
+        run: ./gradlew bundleRelease
+
+      - name: Sign Release
+        uses: r0adkill/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          alias: ${{ secrets.KEYSTORE_ALIAS }}
+          keyPassword: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
+
+      - name: Deploy bundle to Google Play
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_AUTH_JSON }}
+          packageName: org.ransomsensei
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: 'internal'
+          status: 'completed'
+          whatsNewDirectory: whatsNew/
