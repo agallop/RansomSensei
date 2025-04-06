@@ -42,6 +42,8 @@ class CardSetsViewModel(
         private set
     var showDeleteConfirmation by mutableStateOf(false)
         private set
+    var menuExpanded by mutableStateOf(false)
+        private set
 
     fun loadCardSets() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,6 +65,10 @@ class CardSetsViewModel(
         selectedCardSets = selectedCardSets.toMutableSet().apply {
             if (contains(cardSet)) remove(cardSet) else add(cardSet)
         }
+    }
+
+    fun toggleMenuExpanded() {
+        menuExpanded = !menuExpanded
     }
 
     fun showDeleteConfirmation() {

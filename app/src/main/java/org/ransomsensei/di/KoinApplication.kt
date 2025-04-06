@@ -21,6 +21,7 @@ import org.koin.core.context.startKoin
 import org.ransomsensei.activity_lockscreen.di.lockScreenActivityModule
 import org.ransomsensei.activity_main.di.mainActivityModule
 import org.ransomsensei.activity_onboarding.di.onboardingActivityModule
+import org.ransomsensei.activity_settings.di.settingsActivityModule
 import org.ransomsensei.data.di.dataRepositoryModule
 
 class KoinApplication : Application() {
@@ -32,7 +33,8 @@ class KoinApplication : Application() {
                 dataRepositoryModule,
                 mainActivityModule,
                 lockScreenActivityModule,
-                onboardingActivityModule
+                onboardingActivityModule,
+                settingsActivityModule
             )
         }
     }

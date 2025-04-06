@@ -15,6 +15,8 @@
  */
 package org.ransomsensei.activity_main.components
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -26,8 +28,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,13 +53,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.ransomsensei.activity_main.util.Destination
 import org.ransomsensei.activity_main.viewmodels.CardSetsViewModel
+import org.ransomsensei.activity_settings.SettingsActivity
 import org.ransomsensei.data.entity.CardSet
 import org.ransomsensei.data.entity.CardSetStatus
 import org.ransomsensei.theme.AppTheme
 
 @Composable
-fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsViewModel) {
+fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsViewModel, context: Context) {
     CardSetsScreen(
+        context = context,
         navigate = { navigationController.navigate(it) },
         showDeleteConfirmation = viewModel::showDeleteConfirmation,
         hideDeleteConfirmation = viewModel::hideDeleteConfirmation,
@@ -61,7 +69,9 @@ fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsV
         deleteConfirmationShown = viewModel.showDeleteConfirmation,
         cardSets = viewModel.cardSets.collectAsState().value,
         selectedCardSets = viewModel.selectedCardSets,
-        onCardSetLongClick = viewModel::toggleCardSetSelection
+        onCardSetLongClick = viewModel::toggleCardSetSelection,
+        menuExpanded = viewModel.menuExpanded,
+        toggleMenuExpanded = viewModel::toggleMenuExpanded
     )
 }
 
@@ -69,6 +79,7 @@ fun CardSetsScreen(navigationController: NavHostController, viewModel: CardSetsV
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CardSetsScreen(
+    context: Context?,
     navigate: (Destination) -> Unit,
     showDeleteConfirmation: () -> Unit,
     hideDeleteConfirmation: () -> Unit,
@@ -76,7 +87,9 @@ private fun CardSetsScreen(
     deleteConfirmationShown: Boolean,
     cardSets: List<CardSet>,
     selectedCardSets: Set<CardSet>,
-    onCardSetLongClick: (CardSet) -> Unit
+    onCardSetLongClick: (CardSet) -> Unit,
+    menuExpanded: Boolean,
+    toggleMenuExpanded: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -85,6 +98,23 @@ private fun CardSetsScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
+                navigationIcon = {
+                    IconButton(onClick = toggleMenuExpanded) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = toggleMenuExpanded,
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Settings") },
+                            leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                            onClick = {
+                                val intent = Intent(context, SettingsActivity::class.java)
+                                context!!.startActivity(intent)}
+                        )
+                    }
+                },
                 title = {
                     Text("Ransom Sensei")
                 },
@@ -201,6 +231,7 @@ fun CardSetsDefaultNavigationBarActions(navigate: (Destination) -> Unit) {
 fun CardSetsScreenPreview() {
     AppTheme {
         CardSetsScreen(
+            context = null,
             navigate = {},
             showDeleteConfirmation = {},
             hideDeleteConfirmation = {},
@@ -219,6 +250,7 @@ fun CardSetsScreenPreview() {
                 ),
             ),
             selectedCardSets = setOf(),
-            onCardSetLongClick = {})
+            onCardSetLongClick = {},
+            menuExpanded = false)
     }
 }

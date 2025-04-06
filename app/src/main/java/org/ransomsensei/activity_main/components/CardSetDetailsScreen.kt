@@ -93,7 +93,6 @@ fun CardSetDetailsScreen(
     deleteSelectedCardSets: () -> Unit,
     deleteConfirmationShown: Boolean,
 ) {
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

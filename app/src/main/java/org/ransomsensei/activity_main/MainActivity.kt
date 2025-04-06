@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     composable<Destination.CardSetsScreen> {
                         val viewModel = koinViewModel<CardSetsViewModel>()
                         viewModel.loadCardSets()
-                        CardSetsScreen(navController, viewModel)
+                        CardSetsScreen(navController, viewModel, this@MainActivity)
                     }
                     composable<Destination.AddEditCardSetScreen> {
                         val args = it.toRoute<Destination.AddEditCardSetScreen>()
