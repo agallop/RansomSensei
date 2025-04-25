@@ -31,10 +31,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.intl.LocaleList
@@ -63,7 +66,9 @@ fun AddEditCardScreen(navController: NavHostController, viewModel: AddEditCardVi
         updateDifficulty = viewModel::updateDifficulty,
         updateKanaValue = viewModel::updateKanaValue,
         updateKanjiValue = viewModel::updateKanjiValue,
-        updateEnglishValue = viewModel::updateEnglishValue
+        updateEnglishValue = viewModel::updateEnglishValue,
+        isNew = viewModel.isNew,
+        clearForm = viewModel::clearForm
     )
 }
 
@@ -80,9 +85,17 @@ fun AddEditCardScreen(
     updateDifficulty: (Difficulty) -> Unit = {},
     canSave: Boolean,
     insertCard: suspend () -> Unit,
-    popBackStack: () -> Unit
+    popBackStack: () -> Unit,
+    isNew: Boolean,
+    clearForm: () -> Unit
 ) {
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -96,7 +109,7 @@ fun AddEditCardScreen(
                     IconButton(onClick = popBackStack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back button"
+                            contentDescription = "Back"
                         )
                     }
                 })
@@ -154,15 +167,27 @@ fun AddEditCardScreen(
                 Text("Hard")
             }
 
+
             Row {
                 Button(
-                    content = { Text(text = "Add") },
+                    content = { Text(text = if (isNew) "Add" else "Update") },
                     enabled = canSave,
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             insertCard()
                             withContext(Dispatchers.Main) {
-                                popBackStack()
+                                if (isNew) {
+                                    snackbarHostState.showSnackbar(
+                                        "「${
+                                            if (kanjiValue.isNotEmpty())
+                                                kanjiValue
+                                            else kanaValue
+                                        }」 Added!"
+                                    )
+                                    clearForm()
+                                } else {
+                                    popBackStack()
+                                }
                             }
                         }
                     })
@@ -173,7 +198,7 @@ fun AddEditCardScreen(
 
 @PreviewLightDark
 @Composable
-fun AddEditCardScreenPreview() {
+fun AddEditCardScreenPreview_Add() {
     AppTheme {
         AddEditCardScreen(
             kanjiValue = "初めて",
@@ -186,6 +211,29 @@ fun AddEditCardScreenPreview() {
             updateDifficulty = {},
             updateKanaValue = {},
             updateKanjiValue = {},
+            isNew = true,
+            clearForm = {}
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun AddEditCardScreenPreview_Edit() {
+    AppTheme {
+        AddEditCardScreen(
+            kanjiValue = "初めて",
+            kanaValue = "はじめて",
+            englishValue = "For the first time",
+            difficulty = Difficulty.EASY,
+            canSave = true,
+            insertCard = {},
+            popBackStack = {},
+            updateDifficulty = {},
+            updateKanaValue = {},
+            updateKanjiValue = {},
+            isNew = false,
+            clearForm = {}
         )
     }
 }

@@ -36,6 +36,8 @@ class AddEditCardViewModel(private val _repository: RansomSenseiDataRepository) 
     var difficulty by mutableStateOf<Difficulty>(Difficulty.UNKNOWN)
         private set
     private var cardSetId by mutableStateOf<Int>(0)
+    var isNew by mutableStateOf(true)
+        private set
 
     private var _existingCard: Card? = null
     fun loadCard(cardId: Int) {
@@ -45,6 +47,7 @@ class AddEditCardViewModel(private val _repository: RansomSenseiDataRepository) 
             kanaValue = _existingCard?.kanaValue ?: ""
             kanjiValue = _existingCard?.kanjiValue ?: ""
             difficulty = _existingCard?.difficulty ?: Difficulty.UNKNOWN
+            isNew = _existingCard == null
         }
     }
 
@@ -69,7 +72,7 @@ class AddEditCardViewModel(private val _repository: RansomSenseiDataRepository) 
     }
 
     fun canSave(): Boolean {
-        return englishValue.isNotEmpty() && kanaValue.isNotEmpty()
+        return englishValue.isNotEmpty() || kanaValue.isNotEmpty()
                 && kanaValue.isNotEmpty() && difficulty != Difficulty.UNKNOWN
     }
 
@@ -83,5 +86,13 @@ class AddEditCardViewModel(private val _repository: RansomSenseiDataRepository) 
                 englishValue = englishValue, difficulty = difficulty
             )
         )
+    }
+
+    fun clearForm() {
+        englishValue = ""
+        kanaValue = ""
+        kanjiValue = ""
+        difficulty = Difficulty.UNKNOWN
+
     }
 }
