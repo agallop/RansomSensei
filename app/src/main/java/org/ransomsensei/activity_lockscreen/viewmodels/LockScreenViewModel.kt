@@ -15,7 +15,9 @@
  */
 package org.ransomsensei.activity_lockscreen.viewmodels
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -27,6 +29,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.ransomsensei.activity_lockscreen.model.DiffFragment
+import org.ransomsensei.activity_lockscreen.model.DiffFragmentList
 import org.ransomsensei.data.RansomSenseiDataRepository
 import org.ransomsensei.data.entity.Card
 import java.util.Date
@@ -61,6 +65,7 @@ class LockScreenViewModel(
         private set
     var allowSkip by mutableStateOf(false)
         private set
+    var difference by mutableStateOf<DiffFragmentList?>(null)
 
     fun loadQuestion() {
         viewModelScope.launch {
@@ -84,6 +89,116 @@ class LockScreenViewModel(
         viewModelScope.launch {
             withContext(_ioDispatcher) {
                 _repository.setLastInteraction(_date.time)
+            }
+        }
+    }
+
+    fun calculateDifference() {
+        difference = editDifference(currentAnswer, card!!.englishValue)
+    }
+
+    companion object {
+        @VisibleForTesting
+        fun editDifference(
+            input: String,
+            target: String,
+            cache: MutableMap<Pair<String, String>, DiffFragmentList> = mutableMapOf()
+        ): DiffFragmentList {
+            if (input.isEmpty() && target.isEmpty()) {
+                return DiffFragmentList(diffFragments = listOf(), editDistance = 0)
+            }
+            if (input.isEmpty()) {
+                return DiffFragmentList(
+                    diffFragments = listOf(
+                        DiffFragment(
+                            type = DiffFragment.Type.DELETION,
+                            inputSubstring = input,
+                            targetSubstring = target,
+                        )
+                    ), editDistance = target.length
+                )
+            }
+
+            if (target.isEmpty()) {
+                return DiffFragmentList(
+                    diffFragments = listOf(
+                        DiffFragment(
+                            type = DiffFragment.Type.ADDITION,
+                            inputSubstring = input,
+                            targetSubstring = target
+                        )
+                    ), editDistance = input.length
+                )
+            }
+
+            if (input[0].lowercase() == target[0].lowercase()) {
+                return when {
+                    input.length == 1 && target.length == 1 -> cache.getOrPut(Pair(input, target)) {
+                        DiffFragmentList(
+                            diffFragments = listOf(
+                                DiffFragment(
+                                    type = DiffFragment.Type.MATCH,
+                                    inputSubstring = input[0] + "",
+                                    targetSubstring = target[0] + "",
+                                )
+                            ), editDistance = 0
+                        )
+                    }
+
+                    else -> DiffFragmentList(
+                        diffFragments = listOf(
+                            DiffFragment(
+                                type = DiffFragment.Type.MATCH,
+                                inputSubstring = input[0] + "",
+                                targetSubstring = target[0] + "",
+                            )
+                        ), editDistance = 0
+                    ).concat(cache.getOrPut(Pair(input.substring(1), target.substring(1))) {
+                        editDifference(input.substring(1), target.substring(1), cache)
+                    })
+                }
+            }
+
+            val addition = DiffFragmentList(
+                diffFragments = listOf(
+                    DiffFragment(
+                        type = DiffFragment.Type.ADDITION,
+                        inputSubstring = input[0] + "",
+                        targetSubstring = "",
+                    )
+
+                ), editDistance = 1
+            ).concat(cache.getOrPut(Pair(input.substring(1), target)) {
+                editDifference(input.substring(1), target, cache)
+            })
+
+
+            val deletion = DiffFragmentList(
+                diffFragments = listOf(
+                    DiffFragment(
+                        type = DiffFragment.Type.DELETION,
+                        inputSubstring = "",
+                        targetSubstring = target[0] + "",
+                    )
+                ), editDistance = 1
+            ).concat(cache.getOrPut(Pair(input, target.substring(1))) {
+                editDifference(input, target.substring(1), cache)
+            })
+
+            val replacement = DiffFragmentList(
+                diffFragments = listOf(
+                    DiffFragment(
+                        type = DiffFragment.Type.REPLACEMENT,
+                        inputSubstring = input[0] + "",
+                        targetSubstring = target[0] + "",
+                    )
+                ), editDistance = 1
+            ).concat(cache.getOrPut(Pair(input.substring(1), target.substring(1))) {
+                editDifference(input.substring(1), target.substring(1), cache)
+            })
+
+            return listOf(replacement, addition, deletion).reduce { first, second ->
+                if (first.editDistance <= second.editDistance) first else second
             }
         }
     }
